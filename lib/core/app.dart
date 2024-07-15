@@ -1,4 +1,7 @@
-import 'package:events_app_exam/ui/widgets/app_router.dart';
+import 'package:events_app_exam/ui/screens/login_screen/login_screen.dart';
+import 'package:events_app_exam/utils/app_router.dart';
+import 'package:events_app_exam/utils/app_text_styles.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class EventsApp extends StatelessWidget {
@@ -6,9 +9,38 @@ class EventsApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       onGenerateRoute: AppRouter.generateRoute,
+      theme: ThemeData(
+        appBarTheme: AppBarTheme(
+          centerTitle: true,
+          titleTextStyle: AppTextStyles.comicSans.copyWith(
+            fontSize: 22,
+            color: Colors.black,
+          ),
+        ),
+      ),
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return Scaffold(
+              appBar: AppBar(
+                leading: IconButton(
+                  icon: Icon(Icons.logout),
+                  onPressed: () {
+                    FirebaseAuth.instance.signOut();
+                  },
+                ),
+                title: const Text('USER REGISTERED'),
+              ),
+            );
+          } else {
+            return LoginScreen();
+          }
+        },
+      ),
     );
   }
 }
