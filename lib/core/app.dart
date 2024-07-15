@@ -1,3 +1,4 @@
+import 'package:events_app_exam/ui/screens/home_screen/home_screen.dart';
 import 'package:events_app_exam/ui/screens/login_screen/login_screen.dart';
 import 'package:events_app_exam/utils/app_router.dart';
 import 'package:events_app_exam/utils/app_text_styles.dart';
@@ -25,17 +26,7 @@ class EventsApp extends StatelessWidget {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return Scaffold(
-              appBar: AppBar(
-                leading: IconButton(
-                  icon: const Icon(Icons.logout),
-                  onPressed: () {
-                    FirebaseAuth.instance.signOut();
-                  },
-                ),
-                title: const Text('USER REGISTERED'),
-              ),
-            );
+            return const HomeScreen();
           } else {
             return const LoginScreen();
           }

@@ -18,6 +18,10 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _firstNameTextController =
+      TextEditingController();
+  final TextEditingController _secondNameTextController =
+      TextEditingController();
   final TextEditingController _emailTextController = TextEditingController();
   final TextEditingController _passwordTextController = TextEditingController();
   final TextEditingController _confirmPasswordTextController =
@@ -32,132 +36,165 @@ class _SignUpScreenState extends State<SignUpScreen> {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SvgPicture.asset(
-                'assets/images/tadbiro_logo.svg',
-                height: 170,
-                width: 170,
-                fit: BoxFit.cover,
-              ),
-              Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    Text(
-                      'Ro\'yxatdan o\'tish',
-                      style: AppTextStyles.comicSans.copyWith(fontSize: 25),
-                    ),
-                    const Gap(15),
-
-                    //! email text field
-                    CustomTextFormField(
-                      hintText: 'Email',
-                      isObscure: false,
-                      validator: (p0) =>
-                          AppFunctions.textValidator(p0, 'Email'),
-                      textEditingController: _emailTextController,
-                    ),
-                    const Gap(15),
-
-                    //! password text field
-                    CustomTextFormField(
-                      hintText: 'Parol',
-                      isObscure: true,
-                      validator: (p0) =>
-                          AppFunctions.textValidator(p0, 'Parol'),
-                      textEditingController: _passwordTextController,
-                    ),
-                    const Gap(15),
-
-                    //! confirm password text field
-                    CustomTextFormField(
-                      hintText: 'Parolni tasdiqlang',
-                      isObscure: true,
-                      validator: (p0) {
-                        if (_confirmPasswordTextController.text !=
-                            _passwordTextController.text) {
-                          return 'Parol, bir hil bo\'lishi kerak';
-                        }
-                        return null;
-                      },
-                      textEditingController: _confirmPasswordTextController,
-                    ),
-                    const Gap(15),
-
-                    BlocConsumer<AuthBloc, AuthStates>(
-                      listener: (context, state) {
-                        if (state is LoadedAuthState) {
-                          Navigator.of(context).pop();
-                        }
-                      },
-                      builder: (context, state) {
-                        if (state is LoadingAuthState) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-                        return CustomMainOrangeButton(
-                          buttonText: 'Ro\'yxatdan o\'tish',
-                          onTap: () {
-                            if (_formKey.currentState!.validate()) {
-                              try {
-                                authBloc.add(
-                                  RegisterUserEvent(
-                                    email: _emailTextController.text,
-                                    password: _passwordTextController.text,
-                                  ),
-                                );
-                              } catch (e) {
-                                AppFunctions.showErrorSnackBar(
-                                  context,
-                                  e.toString(),
-                                );
-                              }
-                            }
-                          },
-                        );
-                      },
-                    ),
-                  ],
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SvgPicture.asset(
+                  'assets/images/tadbiro_logo.svg',
+                  height: 170,
+                  width: 170,
+                  fit: BoxFit.cover,
                 ),
-              ),
-              BlocBuilder<AuthBloc, AuthStates>(
-                builder: (context, state) {
-                  if (state is LoadingAuthState) {
-                    return const SizedBox();
-                  } else {
-                    return GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Text(
-                        'Tizimga kirish',
-                        style: AppTextStyles.comicSans.copyWith(fontSize: 22),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      Text(
+                        'Ro\'yxatdan o\'tish',
+                        style: AppTextStyles.comicSans.copyWith(fontSize: 25),
                       ),
-                    );
-                  }
-                },
-              ),
-              BlocListener<AuthBloc, AuthStates>(
-                listener: (context, state) {
-                  if (state is ErrorAuthState) {
-                    SchedulerBinding.instance.addPostFrameCallback((_) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(state.errorMessage)),
-                      );
-                    });
-                  }
-                },
-                child: const SizedBox(),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                      const Gap(15),
+                      //! first name
+                      CustomTextFormField(
+                        hintText: 'First name',
+                        isObscure: false,
+                        validator: (p0) =>
+                            AppFunctions.textValidator(p0, 'First name'),
+                        textEditingController: _firstNameTextController,
+                      ),
+                      const Gap(15),
+
+                      //! last name
+                      CustomTextFormField(
+                        hintText: 'Last name',
+                        isObscure: false,
+                        validator: (p0) =>
+                            AppFunctions.textValidator(p0, 'Last name'),
+                        textEditingController: _secondNameTextController,
+                      ),
+                      const Gap(15),
+                      //! email text field
+                      CustomTextFormField(
+                        hintText: 'Email',
+                        isObscure: false,
+                        validator: (p0) =>
+                            AppFunctions.textValidator(p0, 'Email'),
+                        textEditingController: _emailTextController,
+                      ),
+                      const Gap(15),
+
+                      //! password text field
+                      CustomTextFormField(
+                        hintText: 'Parol',
+                        isObscure: true,
+                        validator: (p0) =>
+                            AppFunctions.textValidator(p0, 'Parol'),
+                        textEditingController: _passwordTextController,
+                      ),
+                      const Gap(15),
+
+                      //! confirm password text field
+                      CustomTextFormField(
+                        hintText: 'Parolni tasdiqlang',
+                        isObscure: true,
+                        validator: (p0) {
+                          if (_confirmPasswordTextController.text !=
+                              _passwordTextController.text) {
+                            return 'Parol, bir hil bo\'lishi kerak';
+                          }
+                          return null;
+                        },
+                        textEditingController: _confirmPasswordTextController,
+                      ),
+                      const Gap(15),
+
+                      BlocConsumer<AuthBloc, AuthStates>(
+                        listener: (context, state) {
+                          if (state is LoadedAuthState) {
+                            Navigator.of(context).pop();
+                          }
+                        },
+                        builder: (context, state) {
+                          if (state is LoadingAuthState) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                          return CustomMainOrangeButton(
+                            buttonText: 'Ro\'yxatdan o\'tish',
+                            onTap: () {
+                              if (_formKey.currentState!.validate()) {
+                                try {
+                                  authBloc.add(
+                                    RegisterUserEvent(
+                                      firstName: '',
+                                      lastName: '',
+                                      email: _emailTextController.text,
+                                      password: _passwordTextController.text,
+                                    ),
+                                  );
+                                } catch (e) {
+                                  AppFunctions.showErrorSnackBar(
+                                    context,
+                                    e.toString(),
+                                  );
+                                }
+                              }
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                const Gap(15),
+                BlocBuilder<AuthBloc, AuthStates>(
+                  builder: (context, state) {
+                    if (state is LoadingAuthState) {
+                      return const SizedBox();
+                    } else {
+                      return GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Text(
+                          'Register',
+                          style: AppTextStyles.comicSans.copyWith(fontSize: 22),
+                        ),
+                      );
+                    }
+                  },
+                ),
+                BlocListener<AuthBloc, AuthStates>(
+                  listener: (context, state) {
+                    if (state is ErrorAuthState) {
+                      SchedulerBinding.instance.addPostFrameCallback((_) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(state.errorMessage)),
+                        );
+                      });
+                    }
+                  },
+                  child: const SizedBox(),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _firstNameTextController.dispose();
+    _secondNameTextController.dispose();
+    _emailTextController.dispose();
+    _passwordTextController.dispose();
+    _confirmPasswordTextController.dispose();
+    super.dispose();
   }
 }
