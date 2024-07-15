@@ -7,7 +7,7 @@ class ArrowBackButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => Navigator.of(context).pop(),
-      child: Icon(Icons.arrow_back_ios_new),
+      child: const Icon(Icons.arrow_back_ios_new),
     );
   }
 }

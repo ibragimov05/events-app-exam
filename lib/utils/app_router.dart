@@ -2,7 +2,6 @@ import 'package:events_app_exam/ui/screens/login_screen/login_screen.dart';
 import 'package:events_app_exam/ui/screens/password_recovey_screen/password_recovery_screen.dart';
 import 'package:events_app_exam/ui/screens/signup_screen/sign_up_screen.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/widgets.dart';
 
 class AppRouter {
   static const String login = '/login';

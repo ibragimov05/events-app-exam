@@ -1,11 +1,9 @@
 import 'package:events_app_exam/logic/bloc/auth/auth_bloc.dart';
-import 'package:events_app_exam/logic/services/firebase/firebase_auth_service.dart';
 import 'package:events_app_exam/ui/widgets/custom_main_orange_button.dart';
 import 'package:events_app_exam/ui/widgets/custom_text_form_field.dart';
 import 'package:events_app_exam/utils/app_functions.dart';
 import 'package:events_app_exam/utils/app_router.dart';
 import 'package:events_app_exam/utils/app_text_styles.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -107,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 AppTextStyles.comicSans.copyWith(fontSize: 22),
                           ),
                         ),
-                        Gap(10),
+                        const Gap(10),
                         GestureDetector(
                           onTap: () => Navigator.pushNamed(
                               context, AppRouter.passwordRecovery),

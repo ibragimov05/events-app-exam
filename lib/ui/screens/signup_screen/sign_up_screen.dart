@@ -1,5 +1,4 @@
 import 'package:events_app_exam/logic/bloc/auth/auth_bloc.dart';
-import 'package:events_app_exam/ui/widgets/arrow_back_button.dart';
 import 'package:events_app_exam/ui/widgets/custom_main_orange_button.dart';
 import 'package:events_app_exam/ui/widgets/custom_text_form_field.dart';
 import 'package:events_app_exam/utils/app_functions.dart';

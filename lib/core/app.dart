@@ -28,7 +28,7 @@ class EventsApp extends StatelessWidget {
             return Scaffold(
               appBar: AppBar(
                 leading: IconButton(
-                  icon: Icon(Icons.logout),
+                  icon: const Icon(Icons.logout),
                   onPressed: () {
                     FirebaseAuth.instance.signOut();
                   },
@@ -37,7 +37,7 @@ class EventsApp extends StatelessWidget {
               ),
             );
           } else {
-            return LoginScreen();
+            return const LoginScreen();
           }
         },
       ),
