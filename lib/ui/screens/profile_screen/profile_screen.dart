@@ -1,6 +1,6 @@
 import 'package:events_app_exam/logic/bloc/user/user_bloc.dart';
 import 'package:events_app_exam/ui/screens/profile_screen/widgets/custom_list_tile.dart';
-import 'package:events_app_exam/ui/screens/profile_screen/widgets/edit_user_image.dart';
+import 'package:events_app_exam/ui/widgets/manage_media.dart';
 import 'package:events_app_exam/ui/screens/profile_screen/widgets/show_edit_dialog.dart';
 import 'package:events_app_exam/ui/widgets/arrow_back_button.dart';
 import 'package:events_app_exam/utils/app_functions.dart';
@@ -56,7 +56,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   onTap: () {
                     showDialog(
                       context: context,
-                      builder: (context) => ManageMedia(userId: state.id),
+                      builder: (context) => ManageMedia(
+                        userId: state.id,
+                        isEditProfile: true,
+                      ),
                     );
                   },
                   child: Row(

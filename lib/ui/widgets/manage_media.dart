@@ -4,11 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../../logic/services/firebase/firebase_firestore_service.dart';
+import '../../logic/services/firebase/firebase_firestore_service.dart';
 
 class ManageMedia extends StatefulWidget {
-  final String userId;
-  const ManageMedia({super.key, required this.userId});
+  final bool isEditProfile;
+  final String? userId;
+  const ManageMedia({
+    super.key,
+    required this.isEditProfile,
+    this.userId,
+  });
 
   @override
   State<ManageMedia> createState() => _ManageMediaState();
@@ -55,16 +60,20 @@ class _ManageMediaState extends State<ManageMedia> {
           UniqueKey().toString(), imageFile!);
 
       if (mounted) {
-        context.read<UserBloc>().add(
-              EditUserImageEvent(
-                id: widget.userId,
-                newUserImage: imageUrl,
-              ),
-            );
-        Navigator.pop(context);
+        if (widget.isEditProfile) {
+          context.read<UserBloc>().add(
+                EditUserImageEvent(
+                  id: widget.userId!,
+                  newUserImage: imageUrl,
+                ),
+              );
+          Navigator.pop(context);
+        } else if (!widget.isEditProfile) {
+          Navigator.pop(context, imageUrl);
+        }
       }
     } catch (e) {
-      debugPrint("Error adding product: $e");
+      debugPrint("Error adding image: $e");
     } finally {
       _isLoading = false;
       setState(() {});
@@ -74,7 +83,9 @@ class _ManageMediaState extends State<ManageMedia> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Edit profile picture"),
+      title: Text(
+        widget.isEditProfile ? "Edit profile picture" : 'Add picture to event',
+      ),
       content: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
