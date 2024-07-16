@@ -110,35 +110,35 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const Gap(15),
 
                       BlocConsumer<AuthBloc, AuthStates>(
-                        listener: (context, state) {
+                        listener: (BuildContext context, AuthStates state) {
                           if (state is LoadedAuthState) {
+                            Navigator.of(context).pop();
+                          } else if (state is ErrorAuthState) {
+                            AppFunctions.showErrorSnackBar(
+                              context,
+                              'error: ${state.errorMessage}',
+                            );
                             Navigator.of(context).pop();
                           }
                         },
-                        builder: (context, state) {
+                        builder: (BuildContext context, AuthStates state) {
                           if (state is LoadingAuthState) {
                             return const Center(
-                                child: CircularProgressIndicator());
+                              child: CircularProgressIndicator(),
+                            );
                           }
                           return CustomMainOrangeButton(
-                            buttonText: 'Ro\'yxatdan o\'tish',
+                            buttonText: 'Register',
                             onTap: () {
                               if (_formKey.currentState!.validate()) {
-                                try {
-                                  authBloc.add(
-                                    RegisterUserEvent(
-                                      firstName: '',
-                                      lastName: '',
-                                      email: _emailTextController.text,
-                                      password: _passwordTextController.text,
-                                    ),
-                                  );
-                                } catch (e) {
-                                  AppFunctions.showErrorSnackBar(
-                                    context,
-                                    e.toString(),
-                                  );
-                                }
+                                authBloc.add(
+                                  RegisterUserEvent(
+                                    firstName: _firstNameTextController.text,
+                                    lastName: _secondNameTextController.text,
+                                    email: _emailTextController.text,
+                                    password: _passwordTextController.text,
+                                  ),
+                                );
                               }
                             },
                           );
@@ -149,7 +149,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 const Gap(15),
                 BlocBuilder<AuthBloc, AuthStates>(
-                  builder: (context, state) {
+                  builder: (BuildContext context, AuthStates state) {
                     if (state is LoadingAuthState) {
                       return const SizedBox();
                     } else {

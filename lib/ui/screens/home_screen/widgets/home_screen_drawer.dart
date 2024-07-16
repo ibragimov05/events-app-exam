@@ -1,4 +1,5 @@
 import 'package:events_app_exam/logic/bloc/auth/auth_bloc.dart';
+import 'package:events_app_exam/logic/bloc/user/user_bloc.dart';
 import 'package:events_app_exam/utils/app_colors.dart';
 import 'package:events_app_exam/utils/app_router.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +9,19 @@ import 'package:gap/gap.dart';
 import '../../../../utils/app_text_styles.dart';
 import 'drawer_list_tile.dart';
 
-class HomeScreenDrawer extends StatelessWidget {
+class HomeScreenDrawer extends StatefulWidget {
   const HomeScreenDrawer({super.key});
+
+  @override
+  State<HomeScreenDrawer> createState() => _HomeScreenDrawerState();
+}
+
+class _HomeScreenDrawerState extends State<HomeScreenDrawer> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<UserBloc>().add(FetchUserInfoEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,23 +30,39 @@ class HomeScreenDrawer extends StatelessWidget {
       backgroundColor: Colors.white,
       child: Column(
         children: [
-          UserAccountsDrawerHeader(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              border: Border(
-                bottom: BorderSide(color: Colors.grey, width: 5),
-              ),
-            ),
-            currentAccountPicture:
-                const CircleAvatar(backgroundColor: Colors.amber),
-            accountName: Text(
-              'unnamed',
-              style: AppTextStyles.comicSans.copyWith(color: Colors.black),
-            ),
-            accountEmail: Text(
-              'test',
-              style: AppTextStyles.comicSans.copyWith(color: Colors.black),
-            ),
+          BlocBuilder<UserBloc, UserState>(
+            buildWhen: (previous, current) =>
+                previous != current && current is UserInfoLoadedState,
+            builder: (context, state) {
+              if (state is UserInfoLoadedState) {
+                return UserAccountsDrawerHeader(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    border: Border(
+                      bottom: BorderSide(color: Colors.grey, width: 5),
+                    ),
+                  ),
+                  currentAccountPicture: CircleAvatar(
+                    backgroundColor: Colors.transparent,
+                    child: state.imageUrl.isEmpty
+                        ? const SizedBox()
+                        : Image.network(state.imageUrl),
+                  ),
+                  accountName: Text(
+                    state.name,
+                    style:
+                        AppTextStyles.comicSans.copyWith(color: Colors.black),
+                  ),
+                  accountEmail: Text(
+                    state.email,
+                    style:
+                        AppTextStyles.comicSans.copyWith(color: Colors.black),
+                  ),
+                );
+              }
+
+              return const SizedBox.shrink();
+            },
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),

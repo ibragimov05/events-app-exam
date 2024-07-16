@@ -11,14 +11,15 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _eventTextController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bosh sahifa'),
+        title: const Text('Main screen'),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () async {},
             icon: const Icon(
               Icons.notifications_outlined,
               size: 30,

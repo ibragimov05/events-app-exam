@@ -69,7 +69,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       builder: (context, state) {
                         if (state is LoadingAuthState) {
                           return const Center(
-                              child: CircularProgressIndicator());
+                            child: CircularProgressIndicator(),
+                          );
                         }
                         return CustomMainOrangeButton(
                           buttonText: 'Kirish',

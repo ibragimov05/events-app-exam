@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart' as f;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
-class FirestoreUserService {
+class UserHttpService {
   final String _firebaseCustomKey = dotenv.get('FIREBASE_CUSTOM_KEY');
   final String _baseUrl =
       'https://events-app-unique-default-rtdb.firebaseio.com';
@@ -58,6 +58,8 @@ class FirestoreUserService {
       'first-name': firstName,
       'last-name': lastName,
       'email': email,
+      'image-url':
+          'https://cdn3.iconfinder.com/data/icons/social-messaging-productivity-6/128/profile-circle2-512.png',
     };
 
     final http.Response response =
@@ -69,7 +71,45 @@ class FirestoreUserService {
       return User.fromJson(userData);
     } else {
       throw Exception(
-          'Error adding user: status code ${response.statusCode}, body: ${response.body}');
+        'Error adding user: status code ${response.statusCode}, body: ${response.body}',
+      );
+    }
+  }
+
+  Future<User> editUser({
+    required String id,
+    String? userFCMToken,
+    String? firstName,
+    String? lastName,
+    String? email,
+    String? imageUrl,
+  }) async {
+    final String idToken = await _getIdToken() ?? '';
+    final Uri url = Uri.parse(
+      '$_baseUrl/$_firebaseCustomKey/users/$id.json?auth=$idToken',
+    );
+
+    Map<String, dynamic> updatedData = {
+      if (userFCMToken != null) 'user-FCM-token': userFCMToken,
+      if (firstName != null) 'first-name': firstName,
+      if (lastName != null) 'last-name': lastName,
+      if (email != null) 'email': email,
+      if (imageUrl != null) 'image-url': imageUrl,
+    };
+
+    final http.Response response = await http.patch(
+      url,
+      body: jsonEncode(updatedData),
+    );
+    if (response.statusCode == 200) {
+      return await getUser(
+        email: f.FirebaseAuth.instance.currentUser!.email ?? '',
+        uid: f.FirebaseAuth.instance.currentUser!.uid,
+      );
+    } else {
+      throw Exception(
+        'Error updating user: status code ${response.statusCode}, body: ${response.body}',
+      );
     }
   }
 

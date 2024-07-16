@@ -1,9 +1,12 @@
+import 'package:events_app_exam/logic/services/http/user_http_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class FirebaseAuthService {
-   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+import '../../../data/models/user.dart' as u;
 
-   Future<void> loginUser({
+class FirebaseAuthService {
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  Future<u.User> loginUser({
     required String email,
     required String password,
   }) async {
@@ -12,6 +15,8 @@ class FirebaseAuthService {
         email: email,
         password: password,
       );
+      return await UserHttpService()
+          .getUser(email: email, uid: _firebaseAuth.currentUser!.uid);
     } on FirebaseAuthException {
       rethrow;
     } catch (e) {
@@ -19,7 +24,7 @@ class FirebaseAuthService {
     }
   }
 
-   Future<void> registerUser({
+  Future<void> registerUser({
     required String email,
     required String password,
   }) async {
@@ -35,7 +40,7 @@ class FirebaseAuthService {
     }
   }
 
-   Future<void> logoutUser() async {
+  Future<void> logoutUser() async {
     try {
       await _firebaseAuth.signOut();
     } on FirebaseAuthException {
@@ -45,7 +50,7 @@ class FirebaseAuthService {
     }
   }
 
-   Future<void> resetPassword({required String email}) async {
+  Future<void> resetPassword({required String email}) async {
     try {
       await _firebaseAuth.sendPasswordResetEmail(email: email);
     } on FirebaseAuthException {
