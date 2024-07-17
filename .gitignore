@@ -45,3 +45,4 @@ app.*.map.json
 firebase.json
 lib/firebase_options.dart
 .env
+android/app/src/main/kotlin/com/example/events_app_exam/MainActivity.kt

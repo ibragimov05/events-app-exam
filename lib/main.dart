@@ -26,7 +26,7 @@ void main(List<String> args) async {
             userSharedPreferenceService: UserSharedPrefService(),
           ),
         ),
-        BlocProvider(create: (context) => UserBloc()),
+        BlocProvider(create: (BuildContext context) => UserBloc()),
       ],
       child: const EventsApp(),
     ),

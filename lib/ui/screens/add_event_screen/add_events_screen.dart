@@ -1,13 +1,16 @@
-import 'package:events_app_exam/logic/services/location/location_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:events_app_exam/logic/services/firebase/firebase_event_service.dart';
+import 'package:events_app_exam/logic/services/shared_preference_service/user_shared_preference_service.dart';
+import 'package:events_app_exam/ui/screens/add_event_screen/widgets/yandex_map_widget.dart';
 import 'package:events_app_exam/ui/widgets/arrow_back_button.dart';
 import 'package:events_app_exam/ui/widgets/custom_text_form_field.dart';
 import 'package:events_app_exam/ui/widgets/manage_media.dart';
+import 'package:events_app_exam/utils/app_colors.dart';
+import 'package:events_app_exam/utils/app_functions.dart';
 import 'package:events_app_exam/utils/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
-
-import '../../widgets/error_dialog.dart';
 
 class AddEventsScreen extends StatefulWidget {
   const AddEventsScreen({super.key});
@@ -17,56 +20,60 @@ class AddEventsScreen extends StatefulWidget {
 }
 
 class _AddEventsScreenState extends State<AddEventsScreen> {
-  TimeOfDay _timeOfDay = const TimeOfDay(hour: 0, minute: 0);
-  DateTime _dateTime = DateTime.now();
-  String _imageUrl = '';
-  Point? _userCurrentPosition;
+  TimeOfDay? _timeOfDay;
+  DateTime? _dateTime;
+  String? _imageUrl;
+
+  final FirebaseEventService _eventService = FirebaseEventService();
+
+  Point? _eventLocation;
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   final TextEditingController _eNameController = TextEditingController();
   final TextEditingController _eDescriptionController = TextEditingController();
-  YandexMapController? _yandexMapController;
-  bool _isFetchingAddress = true;
-  List<MapObject>? _polyLines;
-  final TextEditingController _searchTextController = TextEditingController();
-  List _suggestionList = [];
 
-  void _onMyLocationTapped() {
-    if (_userCurrentPosition != null || _yandexMapController != null) {
-      _yandexMapController!.moveCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(target: _userCurrentPosition!, zoom: 17),
-        ),
-      );
-    }
-  }
+  void _onSaveTap() async {
+    if (_formKey.currentState!.validate() &&
+        _dateTime != null &&
+        _timeOfDay != null &&
+        _imageUrl != null &&
+        _eventLocation != null) {
+      final String userID = await UserSharedPrefService().getUserId();
+      try {
+        _eventService.addEvent(
+          creatorId: userID,
+          name: _eNameController.text,
+          time: Timestamp.fromDate(
+            AppFunctions.combineDateTimeAndTimeOfDay(_dateTime!, _timeOfDay!),
+          ),
+          geoPoint:
+              GeoPoint(_eventLocation!.latitude, _eventLocation!.longitude),
+          description: _eDescriptionController.text,
+          imageUrl: _imageUrl!,
+        );
+        if (mounted) {
+          Navigator.of(context).pop();
 
-  @override
-  void initState() {
-    super.initState();
-    LocationService.determinePosition().then(
-      (value) async {
-        if (value != null) {
-          _userCurrentPosition = Point(
-            latitude: value.latitude,
-            longitude: value.longitude,
+          AppFunctions.showSnackBar(
+            context,
+            'New event has been added successully',
           );
         }
-      },
-    ).catchError((error) {
-      showDialog(
-        context: context,
-        builder: (context) => ShowErrorDialog(errorText: error.toString()),
-      );
-    }).whenComplete(
-      () {
-        _isFetchingAddress = false;
-        setState(() {});
-      },
-    );
+      } catch (e) {
+        if (mounted) {
+          AppFunctions.showErrorSnackBar(context, e.toString());
+        }
+      }
+    } else {
+      AppFunctions.showSnackBar(context, 'Please fill all fields');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         leading: const ArrowBackButton(),
         title: const Text('Add event'),
@@ -78,22 +85,31 @@ class _AddEventsScreenState extends State<AddEventsScreen> {
           children: [
             Column(
               children: [
-                CustomTextFormField(
-                  hintText: 'Name',
-                  isObscure: false,
-                  validator: (p0) => null,
-                  textEditingController: _eNameController,
-                  isMaxLines: true,
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      CustomTextFormField(
+                        hintText: 'Event name',
+                        isObscure: false,
+                        validator: (p0) =>
+                            AppFunctions.textValidator(p0, 'event name'),
+                        textEditingController: _eNameController,
+                        isMaxLines: true,
+                      ),
+                      const Gap(15),
+                      CustomTextFormField(
+                        hintText: 'Description about event',
+                        isObscure: false,
+                        validator: (p0) => AppFunctions.textValidator(
+                            p0, 'description about event'),
+                        textEditingController: _eDescriptionController,
+                        isMaxLines: true,
+                      ),
+                      const Gap(15),
+                    ],
+                  ),
                 ),
-                const Gap(15),
-                CustomTextFormField(
-                  hintText: 'Description about event',
-                  isObscure: false,
-                  validator: (p0) => null,
-                  textEditingController: _eDescriptionController,
-                  isMaxLines: true,
-                ),
-                const Gap(15),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -102,9 +118,12 @@ class _AddEventsScreenState extends State<AddEventsScreen> {
                       onPressed: () async {
                         final DateTime? chosenDate = await showDatePicker(
                           context: context,
-                          firstDate: DateTime.now(),
-                          lastDate:
-                              DateTime.now().add(const Duration(days: 30)),
+                          firstDate: DateTime.now().add(
+                            const Duration(days: 1),
+                          ),
+                          lastDate: DateTime.now().add(
+                            const Duration(days: 30),
+                          ),
                         );
                         if (chosenDate != null) {
                           setState(() {
@@ -133,6 +152,7 @@ class _AddEventsScreenState extends State<AddEventsScreen> {
                       icon: const Icon(Icons.picture_in_picture_rounded),
                       onPressed: () async {
                         final String? imageUrl = await showDialog(
+                          barrierDismissible: false,
                           context: context,
                           builder: (context) =>
                               const ManageMedia(isEditProfile: false),
@@ -159,36 +179,32 @@ class _AddEventsScreenState extends State<AddEventsScreen> {
                 SizedBox(
                   width: double.infinity,
                   height: MediaQuery.of(context).size.height / 2,
-                  child: Stack(
-                    children: [
-                      YandexMap(
-                        onMapCreated: (controller) async {
-                          _yandexMapController = controller;
-                        },
-                        mapType: MapType.vector,
-                        onMapTap: (Point point) {},
-                        zoomGesturesEnabled: true,
-                      ),
-                      Align(
-                        alignment: Alignment.bottomRight,
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 10.0),
-                          child: FloatingActionButton(
-                            backgroundColor: const Color(0xFF1C1D22),
-                            onPressed: _onMyLocationTapped,
-                            child: const Icon(
-                              Icons.navigation_outlined,
-                              color: Color(0xFFCCCCCC),
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
+                  child: YandexMapWidget(
+                    onLocationTap: (Point p0) {
+                      _eventLocation = p0;
+                    },
                   ),
                 ),
               ],
             ),
           ],
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: GestureDetector(
+        onTap: _onSaveTap,
+        child: Container(
+          width: MediaQuery.of(context).size.width / 2,
+          height: 50,
+          decoration: BoxDecoration(
+            color: AppColors.mainOrange,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Center(
+              child: Text(
+            'Save',
+            style: AppTextStyles.comicSans.copyWith(fontSize: 18),
+          )),
         ),
       ),
     );

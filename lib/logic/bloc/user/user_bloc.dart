@@ -99,7 +99,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   ) async {
     emit(LoadingUserState());
     try {
-      // Assume newUserImage contains the file path of the selected image
       final imageUrl = event.newUserImage;
 
       await _userSharedPrefService.setUserImageUrl(imageUrl);
