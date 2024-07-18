@@ -65,7 +65,7 @@ class AppFunctions {
     try {
       List<Placemark> placeMarks = await placemarkFromCoordinates(lat, lng);
       Placemark place = placeMarks[0];
-      return "${place.subLocality}, ${place.street}";
+      return "${place.subLocality}, ${place.street}, ${place.locality}";
     } catch (e) {
       return '';
     }

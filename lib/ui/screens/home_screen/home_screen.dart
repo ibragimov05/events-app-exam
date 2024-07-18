@@ -4,9 +4,9 @@ import 'package:events_app_exam/ui/screens/home_screen/widgets/home_screen_drawe
 import 'package:events_app_exam/ui/screens/home_screen/widgets/home_screen_text_field.dart';
 import 'package:events_app_exam/ui/screens/home_screen/widgets/seven_day_event.dart';
 import 'package:events_app_exam/ui/widgets/event_widget.dart';
+import 'package:events_app_exam/utils/app_constants.dart';
 import 'package:events_app_exam/utils/app_text_styles.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 
 import '../../../data/models/event.dart';
 
@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(
               height: 200,
               child: StreamBuilder(
-                stream: _eventService.getSevenDayEvents(),
+                stream: _eventService.getSevenDayEvents(AppConstants.userLocationName),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -64,14 +64,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Text('error snapshot: ${snapshot.error}'),
                     );
                   } else {
-                    final data = snapshot.data!.docs;
+                    List<Event> data = [];
+                    if (snapshot.data != null) {
+                      data = snapshot.data!;
+                    }
                     return data.isNotEmpty
                         ? CarouselSlider(
                             options: CarouselOptions(),
                             items: List.generate(
                               data.length,
                               (index) => SevenDayEvent(
-                                event: Event.fromQuerySnapshot(data[index]),
+                                event: data[index],
                               ),
                             ),
                           )
@@ -85,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             StreamBuilder(
-              stream: _eventService.getEvents(),
+              stream: _eventService.getEvents(AppConstants.userLocationName),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -94,17 +97,25 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Text('error: snapshot ${snapshot.error}'),
                   );
                 } else {
-                  final data = snapshot.data!.docs;
-                  return Expanded(
-                    child: ListView.builder(
-                      itemCount: data.length,
-                      itemBuilder: (context, index) {
-                        final Event event =
-                            Event.fromQuerySnapshot(data[index]);
-                        return EventWidget(isHomeScreen: true, event: event);
-                      },
-                    ),
-                  );
+                  List<Event> data = [];
+                  if (snapshot.data != null) {
+                    data = snapshot.data!;
+                  }
+                  return data.isNotEmpty
+                      ? Expanded(
+                          child: ListView.builder(
+                            itemCount: data.length,
+                            itemBuilder: (context, index) {
+                              return EventWidget(
+                                isHomeScreen: true,
+                                event: data[index],
+                              );
+                            },
+                          ),
+                        )
+                      : const Center(
+                          child: Text('no events found in your city'),
+                        );
                 }
               },
             ),

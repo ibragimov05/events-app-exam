@@ -49,6 +49,8 @@ class UserHttpService {
     required String email,
     required List<String> favoriteEventsId,
     required List<String> registeredEventsId,
+    required List<String> participatedEvents,
+    required List<String> canceledEvents,
   }) async {
     final String idToken = await _getIdToken() ?? '';
 
@@ -64,6 +66,8 @@ class UserHttpService {
       'registered-events': registeredEventsId,
       'image-url':
           'https://cdn3.iconfinder.com/data/icons/social-messaging-productivity-6/128/profile-circle2-512.png',
+      'canceled-events': canceledEvents,
+      'participated-events': participatedEvents,
     };
 
     final http.Response response =
@@ -89,6 +93,8 @@ class UserHttpService {
     String? imageUrl,
     List<String>? favoriteEventsId,
     List<String>? registeredEventsId,
+    List<String>? participatedEvents,
+    List<String>? canceledEvents,
   }) async {
     final String idToken = await _getIdToken() ?? '';
     final Uri url = Uri.parse(
@@ -103,6 +109,8 @@ class UserHttpService {
       if (imageUrl != null) 'image-url': imageUrl,
       if (favoriteEventsId != null) 'favorite-events': favoriteEventsId,
       if (registeredEventsId != null) 'registered-events': registeredEventsId,
+      if (participatedEvents != null) 'canceled-events': canceledEvents,
+      if (canceledEvents != null) 'participated-events': participatedEvents,
     };
 
     final http.Response response = await http.patch(

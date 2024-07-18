@@ -62,6 +62,8 @@ class AuthBloc extends Bloc<AuthEvents, AuthStates> {
           await FirebaseMessaging.instance.getToken() ?? '';
 
       final u.User user = await userHttpService.addUser(
+        canceledEvents: [''],
+        participatedEvents: [''],
         favoriteEventsId: [''],
         registeredEventsId: [''],
         uid: uid,

@@ -16,6 +16,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<EditUserSurnameEvent>(_editUserSurname);
     on<EditUserImageEvent>(_editUserImage);
     on<AddFavoriteEvent>(_addFavoriteEvent);
+    on<AddNewParticipatingEvent>(_addParticipatingEvent);
   }
 
   final UserSharedPrefService _userSharedPrefService = UserSharedPrefService();
@@ -36,6 +37,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           await _userSharedPrefService.getUserFavoriteEvents();
       final registeredEvents =
           await _userSharedPrefService.getUserRegisteredEvents();
+      final canceledEvents =
+          await _userSharedPrefService.getUserCanceledEvents();
 
       emit(UserInfoLoadedState(
         id: id,
@@ -45,6 +48,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         imageUrl: imageUrl,
         favoriteEvents: favoriteEvents,
         registeredEvents: registeredEvents,
+        canceledEvents: canceledEvents,
       ));
     } catch (e) {
       emit(ErrorUserState(error: e.toString()));
@@ -65,13 +69,15 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       );
 
       emit(UserInfoLoadedState(
-          id: user.id,
-          name: user.firstName,
-          surname: user.lastName,
-          email: user.email,
-          imageUrl: user.imageUrl,
-          favoriteEvents: user.favoriteEventsId,
-          registeredEvents: user.registeredEventsId));
+        id: user.id,
+        name: user.firstName,
+        surname: user.lastName,
+        email: user.email,
+        imageUrl: user.imageUrl,
+        favoriteEvents: user.favoriteEventsId,
+        registeredEvents: user.registeredEventsId,
+        canceledEvents: user.canceledEvents,
+      ));
     } catch (e) {
       emit(ErrorUserState(error: e.toString()));
     }
@@ -91,13 +97,15 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       );
 
       emit(UserInfoLoadedState(
-          id: user.id,
-          name: user.firstName,
-          surname: user.lastName,
-          email: user.email,
-          imageUrl: user.imageUrl,
-          favoriteEvents: user.favoriteEventsId,
-          registeredEvents: user.registeredEventsId));
+        id: user.id,
+        name: user.firstName,
+        surname: user.lastName,
+        email: user.email,
+        imageUrl: user.imageUrl,
+        favoriteEvents: user.favoriteEventsId,
+        registeredEvents: user.registeredEventsId,
+        canceledEvents: user.canceledEvents,
+      ));
     } catch (e) {
       emit(ErrorUserState(error: e.toString()));
     }
@@ -127,6 +135,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           imageUrl: user.imageUrl,
           favoriteEvents: user.favoriteEventsId,
           registeredEvents: user.registeredEventsId,
+          canceledEvents: user.canceledEvents,
         ),
       );
     } catch (e) {
@@ -159,8 +168,62 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           imageUrl: user.imageUrl,
           favoriteEvents: user.favoriteEventsId,
           registeredEvents: user.registeredEventsId,
+          canceledEvents: user.canceledEvents,
         ),
       );
+    } catch (e) {
+      emit(ErrorUserState(error: e.toString()));
+    }
+  }
+
+  Future<void> _addParticipatingEvent(
+    AddNewParticipatingEvent event,
+    Emitter<UserState> emit,
+  ) async {
+    emit(LoadingUserState());
+    try {
+      final String eventID = event.eventId;
+
+      final isAdded = await _userSharedPrefService.addRegisteredEvent(eventID);
+      if (isAdded) {
+        final List<String> registeredEvents =
+            await _userSharedPrefService.getUserRegisteredEvents();
+
+        final User user = await _userHttpService.editUser(
+          id: event.userId,
+          registeredEventsId: registeredEvents,
+        );
+
+        emit(
+          UserInfoLoadedState(
+            id: user.id,
+            name: user.firstName,
+            surname: user.lastName,
+            email: user.email,
+            imageUrl: user.imageUrl,
+            favoriteEvents: user.favoriteEventsId,
+            registeredEvents: user.registeredEventsId,
+            canceledEvents: user.canceledEvents,
+          ),
+        );
+      } else {
+        final User user = await _userHttpService.getUser(
+          email: await _userSharedPrefService.getUserEmail(),
+          uid: await _userSharedPrefService.getUserUid(),
+        );
+        emit(
+          LoaededWithoutAddingState(
+            id: user.id,
+            name: user.firstName,
+            surname: user.lastName,
+            email: user.email,
+            imageUrl: user.imageUrl,
+            favoriteEvents: user.favoriteEventsId,
+            registeredEvents: user.registeredEventsId,
+            canceledEvents: user.canceledEvents,
+          ),
+        );
+      }
     } catch (e) {
       emit(ErrorUserState(error: e.toString()));
     }

@@ -156,7 +156,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       return GestureDetector(
                         onTap: () => Navigator.pop(context),
                         child: Text(
-                          'Register',
+                          'Login',
                           style: AppTextStyles.comicSans.copyWith(fontSize: 22),
                         ),
                       );

@@ -125,7 +125,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
           onTap: () {
             showModalBottomSheet(
               context: context,
-              builder: (context) => BookAnEvent(),
+              builder: (context) => BookAnEvent(event: widget.event),
             );
           },
         ),

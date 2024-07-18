@@ -19,8 +19,8 @@ class SevenDayEvent extends StatelessWidget {
       child: Container(
         height: double.infinity,
         width: double.infinity,
-        margin: EdgeInsets.symmetric(horizontal: 3),
-        padding: EdgeInsets.all(10),
+        margin: const EdgeInsets.symmetric(horizontal: 3),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: AppColors.mainOrange.withOpacity(0.2),
           borderRadius: BorderRadius.circular(12),

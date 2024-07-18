@@ -1,13 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../data/models/event.dart';
+
 class FirebaseEventService {
   final _firestoreEvents = FirebaseFirestore.instance.collection('events');
 
-  Stream<QuerySnapshot> getEvents() async* {
-    yield* _firestoreEvents.snapshots();
+  Stream<List<Event>> getEvents(String city) {
+    return _firestoreEvents.snapshots().map((snapshot) {
+      return snapshot.docs
+          .map((doc) => Event.fromQuerySnapshot(doc))
+          .where(
+            (event) =>
+                event.locationName.toLowerCase().contains(city.toLowerCase()),
+          )
+          .toList();
+    });
   }
 
-  Stream<QuerySnapshot> getSevenDayEvents() {
+  Stream<List<Event>> getSevenDayEvents(String city) {
     DateTime now = DateTime.now();
     DateTime sevenDaysFromNow = DateTime.now().add(const Duration(days: 7));
 
@@ -17,13 +27,28 @@ class FirebaseEventService {
     return _firestoreEvents
         .where('start-time', isGreaterThanOrEqualTo: nowTS)
         .where('start-time', isLessThanOrEqualTo: sevenDaysFromNowTS)
-        .snapshots();
+        .snapshots()
+        .map(
+      (snapshot) {
+        return snapshot.docs
+            .map((doc) => Event.fromQuerySnapshot(doc))
+            .where(
+              (event) =>
+                  event.locationName.toLowerCase().contains(city.toLowerCase()),
+            )
+            .toList();
+      },
+    );
   }
 
   Stream<QuerySnapshot> getUserEvents(String creatorId) {
     return _firestoreEvents
         .where('creator-id', isEqualTo: creatorId)
         .snapshots();
+  }
+
+  Stream<QuerySnapshot> getAllEvents() {
+    return _firestoreEvents.snapshots();
   }
 
   void addEvent({

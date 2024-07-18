@@ -1,5 +1,3 @@
-import 'package:events_app_exam/data/models/event.dart';
-
 class User {
   final String id;
   final String uid;
@@ -10,6 +8,8 @@ class User {
   final String imageUrl;
   final List<String> favoriteEventsId;
   final List<String> registeredEventsId;
+  final List<String> participatedEvents;
+  final List<String> canceledEvents;
 
   const User({
     required this.id,
@@ -21,6 +21,8 @@ class User {
     required this.imageUrl,
     required this.favoriteEventsId,
     required this.registeredEventsId,
+    required this.participatedEvents,
+    required this.canceledEvents,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -38,10 +40,12 @@ class User {
       registeredEventsId: (json['registered-events'] as List<dynamic>? ?? [])
           .map((e) => e as String)
           .toList(),
+      participatedEvents: (json['participated-events'] as List<dynamic>? ?? [])
+          .map((e) => e as String)
+          .toList(),
+      canceledEvents: (json['canceled-events'] as List<dynamic>? ?? [])
+          .map((e) => e as String)
+          .toList(),
     );
-  }
-
-  List<Event> getUserEvents(List<Event> events) {
-    return events.where((element) => element.id == id).toList();
   }
 }

@@ -6,6 +6,7 @@ import 'package:events_app_exam/logic/services/firebase/firebase_auth_service.da
 import 'package:events_app_exam/logic/services/http/user_http_service.dart';
 import 'package:events_app_exam/logic/services/location/location_service.dart';
 import 'package:events_app_exam/logic/services/shared_preference_service/user_shared_preference_service.dart';
+import 'package:events_app_exam/utils/app_constants.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +16,7 @@ void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   await LocationService.checkPermissions();
   await dotenv.load(fileName: '.env');
+  AppConstants.userLocationName = await LocationService.determinePositionName();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(
     MultiBlocProvider(

@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
@@ -13,6 +15,10 @@ class EventLocationMap extends StatelessWidget {
         width: double.infinity,
         height: 300,
         child: YandexMap(
+          // ignore: prefer_collection_literals
+          gestureRecognizers: Set()
+            ..add(Factory<EagerGestureRecognizer>(
+                () => EagerGestureRecognizer())),
           onMapCreated: (controller) {
             controller.moveCamera(
               CameraUpdate.newCameraPosition(

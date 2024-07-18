@@ -33,3 +33,12 @@ class AddFavoriteEvent extends UserEvent {
 
   AddFavoriteEvent({required this.id, required this.eventId});
 }
+
+class EditUserParticipatedEvent extends UserEvent {}
+
+class AddNewParticipatingEvent extends UserEvent {
+  final String userId;
+  final String eventId;
+
+  AddNewParticipatingEvent({required this.userId, required this.eventId});
+}

@@ -15,6 +15,7 @@ class UserInfoLoadedState extends UserState {
   final String imageUrl;
   final List<String> favoriteEvents;
   final List<String> registeredEvents;
+  final List<String> canceledEvents;
 
   UserInfoLoadedState({
     required this.id,
@@ -24,9 +25,31 @@ class UserInfoLoadedState extends UserState {
     required this.imageUrl,
     required this.favoriteEvents,
     required this.registeredEvents,
+    required this.canceledEvents,
   });
 }
 
+class LoaededWithoutAddingState extends UserState {
+  final String id;
+  final String name;
+  final String surname;
+  final String email;
+  final String imageUrl;
+  final List<String> favoriteEvents;
+  final List<String> registeredEvents;
+  final List<String> canceledEvents;
+
+  LoaededWithoutAddingState({
+    required this.id,
+    required this.name,
+    required this.surname,
+    required this.email,
+    required this.imageUrl,
+    required this.favoriteEvents,
+    required this.registeredEvents,
+    required this.canceledEvents,
+  });
+}
 
 class ErrorUserState extends UserState {
   final String error;
