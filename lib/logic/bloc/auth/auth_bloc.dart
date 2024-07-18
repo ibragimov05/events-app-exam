@@ -16,6 +16,7 @@ class AuthBloc extends Bloc<AuthEvents, AuthStates> {
   final FirebaseAuthService firebaseAuthService;
   final UserHttpService userHttpService;
   final UserSharedPrefService userSharedPreferenceService;
+
   AuthBloc({
     required this.firebaseAuthService,
     required this.userHttpService,
@@ -35,7 +36,6 @@ class AuthBloc extends Bloc<AuthEvents, AuthStates> {
         email: event.email,
         password: event.password,
       );
-
       await userSharedPreferenceService.addUser(user);
 
       emit(LoadedAuthState());
@@ -62,6 +62,8 @@ class AuthBloc extends Bloc<AuthEvents, AuthStates> {
           await FirebaseMessaging.instance.getToken() ?? '';
 
       final u.User user = await userHttpService.addUser(
+        favoriteEventsId: [''],
+        registeredEventsId: [''],
         uid: uid,
         userFCMToken: userFCMToken,
         firstName: event.firstName,

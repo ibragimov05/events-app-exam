@@ -1,4 +1,6 @@
+import 'package:events_app_exam/data/models/event.dart';
 import 'package:events_app_exam/ui/screens/add_event_screen/add_events_screen.dart';
+import 'package:events_app_exam/ui/screens/event_details_screen.dart/event_details_screen.dart';
 import 'package:events_app_exam/ui/screens/login_screen/login_screen.dart';
 import 'package:events_app_exam/ui/screens/my_events_screen/my_events_screen.dart';
 import 'package:events_app_exam/ui/screens/password_recovey_screen/password_recovery_screen.dart';
@@ -13,6 +15,7 @@ class AppRouter {
   static const String myEvents = '/myEvents';
   static const String profile = '/profile';
   static const String addEvent = '/addEvent';
+  static const String eventDetails = '/eventDetails';
 
   static PageRoute _buildPageRoute(Widget widget) {
     return CupertinoPageRoute(builder: (BuildContext context) => widget);
@@ -32,6 +35,9 @@ class AppRouter {
         return _buildPageRoute(const ProfileScreen());
       case AppRouter.addEvent:
         return _buildPageRoute(const AddEventsScreen());
+      case AppRouter.eventDetails:
+        final data = settings.arguments;
+        return _buildPageRoute(EventDetailsScreen(event: data as Event));
       default:
         return _buildPageRoute(const LoginScreen());
     }

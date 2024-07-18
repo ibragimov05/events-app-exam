@@ -1,5 +1,7 @@
-import 'package:events_app_exam/logic/services/firebase/firebase_event_service.dart';
-import 'package:events_app_exam/logic/services/shared_preference_service/user_shared_preference_service.dart';
+import 'package:events_app_exam/ui/screens/my_events_screen/canceled_events.dart';
+import 'package:events_app_exam/ui/screens/my_events_screen/my_events.dart';
+import 'package:events_app_exam/ui/screens/my_events_screen/near_events.dart';
+import 'package:events_app_exam/ui/screens/my_events_screen/participated_events.dart';
 import 'package:events_app_exam/ui/widgets/arrow_back_button.dart';
 import 'package:events_app_exam/utils/app_router.dart';
 import 'package:flutter/material.dart';
@@ -12,36 +14,32 @@ class MyEventsScreen extends StatefulWidget {
 }
 
 class _MyEventsScreenState extends State<MyEventsScreen> {
-  final FirebaseEventService _eventService = FirebaseEventService();
-
-  @override
-  void initState() {
-    super.initState();
-    UserSharedPrefService().getUserId().then(
-      (value) {
-        print(value);
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    UserSharedPrefService().getUserId().then(
-      (value) {
-        print(value);
-      },
-    );
-    // String creatorId = await UserSharedPrefService().getUserId();
     return DefaultTabController(
       length: 4,
       child: Scaffold(
         appBar: AppBar(
           leading: const ArrowBackButton(),
           title: const Text('My events'),
+          bottom: const TabBar(
+            labelColor: Colors.orange,
+            unselectedLabelColor: Colors.black,
+            isScrollable: true,
+            tabs: [
+              Tab(text: 'All'),
+              Tab(text: 'Near'),
+              Tab(text: 'Participated'),
+              Tab(text: 'Canceled'),
+            ],
+          ),
         ),
-        body: TabBar(
-          tabs: [
-            MyEventsScreen(),
+        body: const TabBarView(
+          children: [
+            MyEvents(),
+            NearEvents(),
+            ParticipatedEvents(),
+            CanceledEvents(),
           ],
         ),
         floatingActionButton: FloatingActionButton(

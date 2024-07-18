@@ -41,6 +41,7 @@ class _ManageMediaState extends State<ManageMedia> {
   void _openCamera() async {
     final imagePicker = ImagePicker();
     final XFile? pickedImage = await imagePicker.pickImage(
+      imageQuality: 10,
       source: ImageSource.camera,
       requestFullMetadata: false,
     );

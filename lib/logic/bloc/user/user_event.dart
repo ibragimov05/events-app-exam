@@ -25,3 +25,11 @@ class EditUserImageEvent extends UserEvent {
 
   EditUserImageEvent({required this.id, required this.newUserImage});
 }
+
+class AddFavoriteEvent extends UserEvent {
+  final String id;
+
+  final String eventId;
+
+  AddFavoriteEvent({required this.id, required this.eventId});
+}

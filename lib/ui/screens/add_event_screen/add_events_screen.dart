@@ -20,7 +20,8 @@ class AddEventsScreen extends StatefulWidget {
 }
 
 class _AddEventsScreenState extends State<AddEventsScreen> {
-  TimeOfDay? _timeOfDay;
+  TimeOfDay? _startTime;
+  TimeOfDay? _endTime;
   DateTime? _dateTime;
   String? _imageUrl;
 
@@ -36,7 +37,8 @@ class _AddEventsScreenState extends State<AddEventsScreen> {
   void _onSaveTap() async {
     if (_formKey.currentState!.validate() &&
         _dateTime != null &&
-        _timeOfDay != null &&
+        _startTime != null &&
+        _endTime != null &&
         _imageUrl != null &&
         _eventLocation != null) {
       final String userID = await UserSharedPrefService().getUserId();
@@ -44,20 +46,26 @@ class _AddEventsScreenState extends State<AddEventsScreen> {
         _eventService.addEvent(
           creatorId: userID,
           name: _eNameController.text,
-          time: Timestamp.fromDate(
-            AppFunctions.combineDateTimeAndTimeOfDay(_dateTime!, _timeOfDay!),
+          startTime: Timestamp.fromDate(
+            AppFunctions.combineDateTimeAndTimeOfDay(_dateTime!, _startTime!),
+          ),
+          endTime: Timestamp.fromDate(
+            AppFunctions.combineDateTimeAndTimeOfDay(_dateTime!, _endTime!),
           ),
           geoPoint:
               GeoPoint(_eventLocation!.latitude, _eventLocation!.longitude),
           description: _eDescriptionController.text,
           imageUrl: _imageUrl!,
+          locationName: await AppFunctions.getAddressFromLatLng(
+              _eventLocation!.latitude, _eventLocation!.longitude),
         );
+
         if (mounted) {
           Navigator.of(context).pop();
 
           AppFunctions.showSnackBar(
             context,
-            'New event has been added successully',
+            'New event has been added successfully',
           );
         }
       } catch (e) {
@@ -126,24 +134,29 @@ class _AddEventsScreenState extends State<AddEventsScreen> {
                           ),
                         );
                         if (chosenDate != null) {
-                          setState(() {
-                            _dateTime = chosenDate;
-                          });
+                          _dateTime = chosenDate;
                         }
                       },
-                      label: const Text('Date'),
+                      label: Text(_dateTime == null
+                          ? 'Date'
+                          : 'Date: ${_dateTime!.toLocal()}'.split(' ')[0]),
                     ),
                     FilledButton.icon(
                       icon: const Icon(Icons.access_time_rounded),
                       onPressed: () async {
-                        final TimeOfDay? chosenTime = await showTimePicker(
+                        final TimeOfDay? startTime = await showTimePicker(
                           context: context,
                           initialTime: TimeOfDay.now(),
                         );
-                        if (chosenTime != null) {
-                          setState(() {
-                            _timeOfDay = chosenTime;
-                          });
+                        if (startTime != null && context.mounted) {
+                          final TimeOfDay? endTime = await showTimePicker(
+                            context: context,
+                            initialTime: TimeOfDay.now(),
+                          );
+                          if (endTime != null) {
+                            _startTime = startTime;
+                            _endTime = endTime;
+                          }
                         }
                       },
                       label: const Text('Time'),
@@ -158,9 +171,7 @@ class _AddEventsScreenState extends State<AddEventsScreen> {
                               const ManageMedia(isEditProfile: false),
                         );
                         if (imageUrl != null) {
-                          setState(() {
-                            _imageUrl = imageUrl;
-                          });
+                          _imageUrl = imageUrl;
                         }
                       },
                       label: const Text('Picture'),

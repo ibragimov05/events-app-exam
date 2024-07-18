@@ -13,6 +13,8 @@ class UserInfoLoadedState extends UserState {
   final String surname;
   final String email;
   final String imageUrl;
+  final List<String> favoriteEvents;
+  final List<String> registeredEvents;
 
   UserInfoLoadedState({
     required this.id,
@@ -20,6 +22,8 @@ class UserInfoLoadedState extends UserState {
     required this.surname,
     required this.email,
     required this.imageUrl,
+    required this.favoriteEvents,
+    required this.registeredEvents,
   });
 }
 

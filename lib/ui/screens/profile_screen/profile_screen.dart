@@ -1,5 +1,6 @@
 import 'package:events_app_exam/logic/bloc/user/user_bloc.dart';
 import 'package:events_app_exam/ui/screens/profile_screen/widgets/custom_list_tile.dart';
+import 'package:events_app_exam/ui/widgets/image_with_loader.dart';
 import 'package:events_app_exam/ui/widgets/manage_media.dart';
 import 'package:events_app_exam/ui/screens/profile_screen/widgets/show_edit_dialog.dart';
 import 'package:events_app_exam/ui/widgets/arrow_back_button.dart';
@@ -36,7 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           } else if (state is LoadingUserState) {
             showDialog(
               context: context,
-              barrierDismissible: false, // To prevent dismissing the dialog
+              barrierDismissible: false,
               builder: (context) => const Center(
                 child: CircularProgressIndicator(),
               ),
@@ -75,31 +76,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         child: state.imageUrl.isEmpty
                             ? const SizedBox()
-                            : Image.network(
-                                state.imageUrl,
-                                fit: BoxFit.cover,
-                                loadingBuilder: (BuildContext context,
-                                    Widget child,
-                                    ImageChunkEvent? loadingProgress) {
-                                  if (loadingProgress == null) {
-                                    return child; // Image is fully loaded, display it
-                                  } else {
-                                    // Display a progress indicator while the image is loading
-                                    return Center(
-                                      child: CircularProgressIndicator(
-                                        value: loadingProgress
-                                                    .expectedTotalBytes !=
-                                                null
-                                            ? loadingProgress
-                                                    .cumulativeBytesLoaded /
-                                                loadingProgress
-                                                    .expectedTotalBytes!
-                                            : null,
-                                      ),
-                                    );
-                                  }
-                                },
-                              ),
+                            : ImageWithLoader(imageUrl: state.imageUrl, h: 200, w: 200)
                       ),
                     ],
                   ),

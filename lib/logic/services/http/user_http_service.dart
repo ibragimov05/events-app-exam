@@ -27,6 +27,7 @@ class UserHttpService {
         if (value['email'] == email && value['uid'] == uid) {
           value['id'] = key;
           user = User.fromJson(value);
+          return;
         }
       });
 
@@ -46,18 +47,21 @@ class UserHttpService {
     required String firstName,
     required String lastName,
     required String email,
+    required List<String> favoriteEventsId,
+    required List<String> registeredEventsId,
   }) async {
     final String idToken = await _getIdToken() ?? '';
 
     final Uri url =
         Uri.parse('$_baseUrl/$_firebaseCustomKey/users.json?auth=$idToken');
-
     Map<String, dynamic> userData = {
       'uid': f.FirebaseAuth.instance.currentUser?.uid ?? '',
       'user-FCM-token': userFCMToken,
       'first-name': firstName,
       'last-name': lastName,
       'email': email,
+      'favorite-events': favoriteEventsId,
+      'registered-events': registeredEventsId,
       'image-url':
           'https://cdn3.iconfinder.com/data/icons/social-messaging-productivity-6/128/profile-circle2-512.png',
     };
@@ -83,6 +87,8 @@ class UserHttpService {
     String? lastName,
     String? email,
     String? imageUrl,
+    List<String>? favoriteEventsId,
+    List<String>? registeredEventsId,
   }) async {
     final String idToken = await _getIdToken() ?? '';
     final Uri url = Uri.parse(
@@ -95,17 +101,29 @@ class UserHttpService {
       if (lastName != null) 'last-name': lastName,
       if (email != null) 'email': email,
       if (imageUrl != null) 'image-url': imageUrl,
+      if (favoriteEventsId != null) 'favorite-events': favoriteEventsId,
+      if (registeredEventsId != null) 'registered-events': registeredEventsId,
     };
 
     final http.Response response = await http.patch(
       url,
       body: jsonEncode(updatedData),
     );
+
     if (response.statusCode == 200) {
-      return await getUser(
-        email: f.FirebaseAuth.instance.currentUser!.email ?? '',
-        uid: f.FirebaseAuth.instance.currentUser!.uid,
-      );
+      final updatedUserData = {
+        'id': id,
+        'uid': f.FirebaseAuth.instance.currentUser?.uid ?? '',
+        'user-FCM-token': userFCMToken ?? '',
+        'first-name': firstName ?? '',
+        'last-name': lastName ?? '',
+        'email': email ?? '',
+        'image-url': imageUrl ?? '',
+        'favorite-events': favoriteEventsId ?? [],
+        'registered-events': registeredEventsId ?? [],
+      };
+
+      return User.fromJson(updatedUserData);
     } else {
       throw Exception(
         'Error updating user: status code ${response.statusCode}, body: ${response.body}',

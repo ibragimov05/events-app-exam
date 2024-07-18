@@ -8,6 +8,8 @@ class User {
   final String lastName;
   final String email;
   final String imageUrl;
+  final List<String> favoriteEventsId;
+  final List<String> registeredEventsId;
 
   const User({
     required this.id,
@@ -17,17 +19,25 @@ class User {
     required this.lastName,
     required this.email,
     required this.imageUrl,
+    required this.favoriteEventsId,
+    required this.registeredEventsId,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'] ?? '',
-      uid: json['uid'] ?? '',
-      userFCMToken: json['user-FCM-token'] ?? '',
-      firstName: json['first-name'] ?? '',
-      lastName: json['last-name'] ?? '',
-      email: json['email'] ?? '',
-      imageUrl: json['image-url'] ?? '',
+      id: json['id'],
+      uid: json['uid'],
+      userFCMToken: json['user-FCM-token'],
+      firstName: json['first-name'],
+      lastName: json['last-name'],
+      email: json['email'],
+      imageUrl: json['image-url'],
+      favoriteEventsId: (json['favorite-events'] as List<dynamic>? ?? [])
+          .map((e) => e as String)
+          .toList(),
+      registeredEventsId: (json['registered-events'] as List<dynamic>? ?? [])
+          .map((e) => e as String)
+          .toList(),
     );
   }
 

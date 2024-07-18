@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:events_app_exam/data/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -5,7 +7,7 @@ class UserSharedPrefService {
   Future<void> addUser(User user) async {
     final sharedPreferences = await SharedPreferences.getInstance();
 
-    final userMap = {
+    final Map<String, dynamic> userMap = {
       'id': user.id,
       'uid': user.uid,
       'userFCMToken': user.userFCMToken,
@@ -13,6 +15,8 @@ class UserSharedPrefService {
       'lastName': user.lastName,
       'email': user.email,
       'imageUrl': user.imageUrl,
+      'favorite-events': jsonEncode(user.favoriteEventsId),
+      'registered-events': jsonEncode(user.registeredEventsId),
     };
 
     for (var entry in userMap.entries) {
@@ -31,18 +35,65 @@ class UserSharedPrefService {
   }
 
   Future<String> getUserId() async => _getString('id');
+
   Future<String> getUserUid() async => _getString('uid');
+
   Future<String> getUserFCMToken() async => _getString('userFCMToken');
+
   Future<String> getUserFirstName() async => _getString('firstName', 'unnamed');
+
   Future<String> getUserLastName() async => _getString('lastName');
+
   Future<String> getUserEmail() async => _getString('email');
+
   Future<String> getUserImageUrl() async => _getString('imageUrl');
 
+  Future<List<String>> getUserFavoriteEvents() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    final data = jsonDecode(
+      sharedPreferences.getString('favorite-events') ?? '',
+    );
+
+    return (data as List<dynamic>).map((e) => e as String).toList();
+  }
+
+  Future<List<String>> getUserRegisteredEvents() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    final data =
+        jsonDecode(sharedPreferences.getString('registered-events') ?? '');
+
+    return (data as List<dynamic>).map((e) => e as String).toList();
+  }
+
   Future<void> setUserId(String id) async => _setString('id', id);
+
   Future<void> setUserUid(String uid) async => _setString('uid', uid);
-  Future<void> setUserFCMToken(String userFCMToken) async => _setString('userFCMToken', userFCMToken);
-  Future<void> setUserFirstName(String firstName) async => _setString('firstName', firstName);
-  Future<void> setUserLastName(String lastName) async => _setString('lastName', lastName);
+
+  Future<void> setUserFCMToken(String userFCMToken) async =>
+      _setString('userFCMToken', userFCMToken);
+
+  Future<void> setUserFirstName(String firstName) async =>
+      _setString('firstName', firstName);
+
+  Future<void> setUserLastName(String lastName) async =>
+      _setString('lastName', lastName);
+
   Future<void> setUserEmail(String email) async => _setString('email', email);
-  Future<void> setUserImageUrl(String imageUrl) async => _setString('imageUrl', imageUrl);
+
+  Future<void> setUserImageUrl(String imageUrl) async =>
+      _setString('imageUrl', imageUrl);
+
+  Future<void> addRegisteredEvent(String eventId) async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    List<String> data = await getUserRegisteredEvents();
+    data.add(eventId);
+    sharedPreferences.setString('registered-events', jsonEncode(data));
+  }
+
+  Future<void> addFavoriteEvent(String eventId) async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    List<String> data = await getUserFavoriteEvents();
+    data.add(eventId);
+    sharedPreferences.setString('favorite-events', jsonEncode(data));
+  }
 }

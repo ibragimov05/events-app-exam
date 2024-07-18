@@ -1,5 +1,6 @@
 import 'package:events_app_exam/logic/bloc/auth/auth_bloc.dart';
 import 'package:events_app_exam/logic/bloc/user/user_bloc.dart';
+import 'package:events_app_exam/ui/widgets/image_with_loader.dart';
 import 'package:events_app_exam/utils/app_colors.dart';
 import 'package:events_app_exam/utils/app_router.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +47,8 @@ class _HomeScreenDrawerState extends State<HomeScreenDrawer> {
                     backgroundColor: Colors.transparent,
                     child: state.imageUrl.isEmpty
                         ? const SizedBox()
-                        : Image.network(state.imageUrl),
+                        : ImageWithLoader(
+                            imageUrl: state.imageUrl, h: 100, w: 100),
                   ),
                   accountName: Text(
                     state.name,
@@ -60,7 +62,12 @@ class _HomeScreenDrawerState extends State<HomeScreenDrawer> {
                   ),
                 );
               }
-
+              if (state is ErrorUserState) {
+                return SizedBox(
+                  height: 200,
+                  child: Center(child: Text(state.error)),
+                );
+              }
               return const SizedBox.shrink();
             },
           ),

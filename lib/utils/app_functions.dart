@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:events_app_exam/utils/app_colors.dart';
 import 'package:events_app_exam/utils/app_text_styles.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:intl/intl.dart';
 
 class AppFunctions {
   static void showSnackBar(BuildContext context, String message) {
@@ -29,12 +32,12 @@ class AppFunctions {
 
   static String? textValidator(String? text, String fieldName) {
     if (text == null || text.trim().isEmpty) {
-      return 'Ilitmos, ${fieldName.toLowerCase()}ingizni kiriting';
+      return 'Please, enter your ${fieldName.toLowerCase()}';
     }
     return null;
   }
 
- static DateTime combineDateTimeAndTimeOfDay(DateTime date, TimeOfDay time) {
+  static DateTime combineDateTimeAndTimeOfDay(DateTime date, TimeOfDay time) {
     return DateTime(
       date.year,
       date.month,
@@ -43,4 +46,32 @@ class AppFunctions {
       time.minute,
     );
   }
+
+  static String getFormattedDate(Timestamp time) {
+    DateTime dateTime = time.toDate();
+    DateFormat formatter = DateFormat('MMMM dd, yyyy');
+    return formatter.format(dateTime);
+  }
+
+  static String getFormattedTimeOfDay(Timestamp time) {
+    final date = time.toDate();
+    TimeOfDay timeOfDay = TimeOfDay(hour: date.hour, minute: date.minute);
+    String formattedHour = timeOfDay.hour.toString().padLeft(2, '0');
+    String formattedMinute = timeOfDay.minute.toString().padLeft(2, '0');
+    return '$formattedHour:$formattedMinute';
+  }
+
+  static Future<String> getAddressFromLatLng(double lat, double lng) async {
+    try {
+      List<Placemark> placeMarks = await placemarkFromCoordinates(lat, lng);
+      Placemark place = placeMarks[0];
+      return "${place.subLocality}, ${place.street}";
+    } catch (e) {
+      return '';
+    }
+  }
+
+  String dateTime(Timestamp time) => AppFunctions.getFormattedDate(time);
+
+  String timeOfDay(Timestamp time) => AppFunctions.getFormattedTimeOfDay(time);
 }
