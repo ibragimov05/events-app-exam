@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Event {
   final String id;
   final String creatorId;
+  final String creatorName;
+  final String creatorImageUrl;
   final String name;
   final Timestamp startTime;
   final Timestamp endTime;
@@ -10,11 +12,13 @@ class Event {
   final String description;
   final String imageUrl;
   final String locationName;
-  // final int attendingPeople;
+  final int attendingPeople;
 
   Event({
     required this.id,
     required this.creatorId,
+    required this.creatorName,
+    required this.creatorImageUrl,
     required this.name,
     required this.startTime,
     required this.endTime,
@@ -22,13 +26,15 @@ class Event {
     required this.description,
     required this.imageUrl,
     required this.locationName,
-    // required this.attendingPeople,
+    required this.attendingPeople,
   });
 
   factory Event.fromQuerySnapshot(QueryDocumentSnapshot query) {
     return Event(
       id: query.id,
       creatorId: query['creator-id'],
+      creatorName: query['creator-name'],
+      creatorImageUrl: query['creator-image-url'],
       name: query['name'],
       startTime: query['start-time'],
       endTime: query['end-time'],
@@ -36,7 +42,7 @@ class Event {
       description: query['description'],
       imageUrl: query['image-url'],
       locationName: query['location-name'],
-      // attendingPeople: query['attending-people'],
+      attendingPeople: query['attending-people'],
     );
   }
 }

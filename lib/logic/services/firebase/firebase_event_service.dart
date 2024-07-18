@@ -9,7 +9,7 @@ class FirebaseEventService {
 
   Stream<QuerySnapshot> getSevenDayEvents() {
     DateTime now = DateTime.now();
-    DateTime sevenDaysFromNow = DateTime.now().add(Duration(days: 7));
+    DateTime sevenDaysFromNow = DateTime.now().add(const Duration(days: 7));
 
     Timestamp nowTS = Timestamp.fromDate(now);
     Timestamp sevenDaysFromNowTS = Timestamp.fromDate(sevenDaysFromNow);
@@ -28,6 +28,9 @@ class FirebaseEventService {
 
   void addEvent({
     required String creatorId,
+    required String creatorName,
+    required String creatorEmail,
+    required String creatorImageUrl,
     required String name,
     required Timestamp startTime,
     required Timestamp endTime,
@@ -38,6 +41,9 @@ class FirebaseEventService {
   }) {
     _firestoreEvents.add({
       'creator-id': creatorId,
+      'creator-email': creatorEmail,
+      'creator-image-url': creatorImageUrl,
+      'creator-name': creatorName,
       'name': name,
       'end-time': startTime,
       'start-time': endTime,
@@ -45,6 +51,7 @@ class FirebaseEventService {
       'description': description,
       'image-url': imageUrl,
       'location-name': locationName,
+      'attending-people': 0,
     });
   }
 

@@ -86,7 +86,8 @@ class _YandexMapWidgetState extends State<YandexMapWidget> {
                         ),
                       ),
                     );
-                    _mapObjects.add(_placemarkMapObject!);
+                   
+                   _mapObjects.add(_placemarkMapObject!);
                   });
                   widget.onLocationTap(argument);
                 },

@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class EventCard extends StatelessWidget {
   final IconData icon;
-  final String date;
-  final String timeRange;
+  final String text1;
+  final String text2;
 
   const EventCard({
     super.key,
     required this.icon,
-    required this.date,
-    required this.timeRange,
+    required this.text1,
+    required this.text2,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Get day of the week in Uzbek
-
     return Card(
       color: Colors.blue.shade50,
       child: Padding(
@@ -25,25 +22,27 @@ class EventCard extends StatelessWidget {
           children: [
             Icon(icon, size: 40, color: Colors.blue),
             const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  date,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    text1,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  'time',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
+                  const SizedBox(height: 5),
+                  Text(
+                    text2,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),

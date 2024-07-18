@@ -10,6 +10,7 @@ import 'package:events_app_exam/utils/app_functions.dart';
 import 'package:events_app_exam/utils/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:rounded_loading_button_plus/rounded_loading_button.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
 class AddEventsScreen extends StatefulWidget {
@@ -26,6 +27,9 @@ class _AddEventsScreenState extends State<AddEventsScreen> {
   String? _imageUrl;
 
   final FirebaseEventService _eventService = FirebaseEventService();
+  final UserSharedPrefService _prefService = UserSharedPrefService();
+  final RoundedLoadingButtonController _buttonController =
+      RoundedLoadingButtonController();
 
   Point? _eventLocation;
 
@@ -41,10 +45,13 @@ class _AddEventsScreenState extends State<AddEventsScreen> {
         _endTime != null &&
         _imageUrl != null &&
         _eventLocation != null) {
-      final String userID = await UserSharedPrefService().getUserId();
+      _buttonController.start();
       try {
         _eventService.addEvent(
-          creatorId: userID,
+          creatorId: await _prefService.getUserId(),
+          creatorName: await _prefService.getUserFirstName(),
+          creatorImageUrl: await _prefService.getUserImageUrl(),
+          creatorEmail: await _prefService.getUserEmail(),
           name: _eNameController.text,
           startTime: Timestamp.fromDate(
             AppFunctions.combineDateTimeAndTimeOfDay(_dateTime!, _startTime!),
@@ -72,9 +79,12 @@ class _AddEventsScreenState extends State<AddEventsScreen> {
         if (mounted) {
           AppFunctions.showErrorSnackBar(context, e.toString());
         }
+      } finally {
+        _buttonController.reset();
       }
     } else {
       AppFunctions.showSnackBar(context, 'Please fill all fields');
+      _buttonController.reset();
     }
   }
 
@@ -202,15 +212,12 @@ class _AddEventsScreenState extends State<AddEventsScreen> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: GestureDetector(
-        onTap: _onSaveTap,
-        child: Container(
-          width: MediaQuery.of(context).size.width / 2,
-          height: 50,
-          decoration: BoxDecoration(
-            color: AppColors.mainOrange,
-            borderRadius: BorderRadius.circular(10),
-          ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 100.0),
+        child: RoundedLoadingButton(
+          controller: _buttonController,
+          onPressed: _onSaveTap,
+          color: AppColors.mainOrange,
           child: Center(
               child: Text(
             'Save',
