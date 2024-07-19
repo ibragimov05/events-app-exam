@@ -80,6 +80,10 @@ class FirebaseEventService {
     });
   }
 
+  void updatePeopleToEvent(String id, int peopleCount) {
+    _firestoreEvents.doc(id).update({'attending-people': peopleCount});
+  }
+
   void editEvent() {}
 
   void deleteEvent(String id) => _firestoreEvents.doc(id).delete();

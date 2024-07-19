@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:events_app_exam/data/models/event.dart';
+import 'package:events_app_exam/logic/services/firebase/firebase_event_service.dart';
+import 'package:events_app_exam/logic/services/http/user_http_service.dart';
+import 'package:events_app_exam/logic/services/shared_preference_service/user_shared_preference_service.dart';
 import 'package:events_app_exam/ui/screens/event_details_screen.dart/widgets/book_an_event.dart';
 import 'package:events_app_exam/ui/screens/event_details_screen.dart/widgets/event_location_map.dart';
 import 'package:events_app_exam/ui/screens/event_details_screen.dart/widgets/list_tile_widget.dart';
@@ -9,10 +14,12 @@ import 'package:events_app_exam/utils/app_functions.dart';
 import 'package:events_app_exam/utils/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
 class EventDetailsScreen extends StatefulWidget {
   final Event event;
+
   const EventDetailsScreen({super.key, required this.event});
 
   @override
@@ -20,6 +27,44 @@ class EventDetailsScreen extends StatefulWidget {
 }
 
 class _EventDetailsScreenState extends State<EventDetailsScreen> {
+  final UserSharedPrefService _prefService = UserSharedPrefService();
+  final FirebaseEventService _eventService = FirebaseEventService();
+  List<String> eventsId = [];
+  List<String> canceledEvents = [];
+
+  Future<void> getInfo() async {
+    eventsId = await _prefService.getUserRegisteredEvents();
+    canceledEvents = await _prefService.getUserCanceledEvents();
+  }
+
+  void _onCancelTap() async {
+    eventsId.removeWhere((element) => element == widget.event.id);
+    canceledEvents.add(widget.event.id);
+
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setString('registered-events', jsonEncode(eventsId));
+    sharedPreferences.setString('canceled-events', jsonEncode(canceledEvents));
+    await UserHttpService().editUser(
+      id: await _prefService.getUserId(),
+      registeredEventsId: eventsId,
+      canceledEvents: canceledEvents,
+    );
+
+    _eventService.updatePeopleToEvent(
+      widget.event.id,
+      widget.event.attendingPeople - 1,
+    );
+
+    if (mounted) {
+      _prefService.addCanceledEvent(widget.event.id);
+      Navigator.of(context).pop();
+      AppFunctions.showSnackBar(
+        context,
+        "Canceled successfully",
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,12 +101,10 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                 ),
                 EventCard(
                   icon: Icons.event,
-                  text1: '${widget.event.attendingPeople} people are atteding',
+                  text1: '${widget.event.attendingPeople} people are attending',
                   text2: 'sign up too!',
                 ),
                 const Gap(20),
-
-                //! event creator
                 Row(
                   children: [
                     Container(
@@ -89,7 +132,6 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                     ),
                   ],
                 ),
-
                 const Gap(20),
                 Text(
                   'About event',
@@ -99,12 +141,10 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                   widget.event.description,
                   style: AppTextStyles.comicSans,
                 ),
-
                 const Gap(20),
                 const Text('Location'),
                 Text(widget.event.locationName),
                 const Gap(20),
-
                 EventLocationMap(
                   eventLocation: Point(
                     latitude: widget.event.geoPoint.latitude,
@@ -120,13 +160,38 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: CustomMainOrangeButton(
-          buttonText: 'Register to event',
-          onTap: () {
-            showModalBottomSheet(
-              context: context,
-              builder: (context) => BookAnEvent(event: widget.event),
-            );
+        child: FutureBuilder(
+          future: getInfo(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (eventsId.contains(widget.event.id)) {
+                if (widget.event.startTime.toDate().isAfter(DateTime.now())) {
+                  return CustomMainOrangeButton(
+                    color: Colors.red,
+                    buttonText: 'Cancel event',
+                    onTap: () => _onCancelTap(),
+                  );
+                } else {
+                  return CustomMainOrangeButton(
+                    buttonText: 'Already ended',
+                    onTap: () {},
+                    color: Colors.grey,
+                  );
+                }
+              } else {
+                return CustomMainOrangeButton(
+                  buttonText: 'Register to event',
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (context) => BookAnEvent(event: widget.event),
+                    );
+                  },
+                );
+              }
+            }
+            return const Center(child: CircularProgressIndicator());
           },
         ),
       ),

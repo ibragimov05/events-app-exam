@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import '../../../logic/services/shared_preference_service/user_shared_preference_service.dart';
 
 class GetEvents extends StatefulWidget {
-  final List<Event>Function(List<Event>, List<String>) eventFuncion;
-  const GetEvents({super.key,required this.eventFuncion});
+  final bool isCanceled;
+  final List<Event> Function(List<Event>, List<String>) eventFunction;
+
+  const GetEvents(
+      {super.key, required this.isCanceled, required this.eventFunction});
 
   @override
   State<GetEvents> createState() => _GetEventsState();
@@ -43,7 +46,8 @@ class _GetEventsState extends State<GetEvents> {
                 final data = snapshot.data!.docs;
                 final List<Event> events =
                     data.map((e) => Event.fromQuerySnapshot(e)).toList();
-                final userParticipatingEvents = widget.eventFuncion(events,_userParticipatingEvents);
+                final userParticipatingEvents =
+                    widget.eventFunction(events, _userParticipatingEvents);
                 return data.isNotEmpty
                     ? ListView.builder(
                         itemCount: userParticipatingEvents.length,
@@ -54,7 +58,9 @@ class _GetEventsState extends State<GetEvents> {
                           );
                         },
                       )
-                    : const Center(child: Text('no events found'));
+                    : const Center(
+                        child: Text('no events found'),
+                      );
               }
             },
           );
@@ -63,6 +69,4 @@ class _GetEventsState extends State<GetEvents> {
       },
     );
   }
-
-  
 }

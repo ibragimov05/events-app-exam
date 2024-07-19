@@ -19,7 +19,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<UserBloc>().add(FetchUserInfoEvent());
   }
 
   @override
@@ -31,6 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: const Text('Profile'),
       ),
       body: BlocConsumer<UserBloc, UserState>(
+        bloc: context.read<UserBloc>()..add(FetchUserInfoEvent()),
         listener: (context, state) {
           if (state is ErrorUserState) {
             AppFunctions.showErrorSnackBar(context, state.error);
@@ -46,9 +46,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Navigator.pop(context);
           }
         },
-        buildWhen: (previous, current) =>
+        buildWhen: (UserState previous, UserState current) =>
             previous != current && current is UserInfoLoadedState,
-        builder: (context, state) {
+        builder: (BuildContext context, UserState state) {
           if (state is UserInfoLoadedState) {
             return ListView(
               padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -57,7 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   onTap: () {
                     showDialog(
                       context: context,
-                      builder: (context) => ManageMedia(
+                      builder: (BuildContext context) => ManageMedia(
                         userId: state.id,
                         isEditProfile: true,
                       ),
@@ -76,7 +76,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         child: state.imageUrl.isEmpty
                             ? const SizedBox()
-                            : ImageWithLoader(imageUrl: state.imageUrl, h: 200, w: 200)
+                            : ImageWithLoader(
+                                imageUrl: state.imageUrl, h: 200, w: 200),
                       ),
                     ],
                   ),
@@ -153,6 +154,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           return const SizedBox.shrink();
         },
       ),
+
     );
   }
 }

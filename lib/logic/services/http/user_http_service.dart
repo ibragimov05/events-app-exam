@@ -130,7 +130,6 @@ class UserHttpService {
         'favorite-events': favoriteEventsId ?? [],
         'registered-events': registeredEventsId ?? [],
       };
-
       return User.fromJson(updatedUserData);
     } else {
       throw Exception(

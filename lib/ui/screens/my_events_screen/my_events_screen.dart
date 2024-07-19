@@ -1,4 +1,3 @@
-import 'package:events_app_exam/ui/screens/my_events_screen/canceled_events.dart';
 import 'package:events_app_exam/ui/screens/my_events_screen/my_events.dart';
 import 'package:events_app_exam/ui/screens/my_events_screen/get_events.dart';
 import 'package:events_app_exam/ui/widgets/arrow_back_button.dart';
@@ -39,7 +38,8 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
           children: [
             const MyEvents(),
             GetEvents(
-              eventFuncion:
+              isCanceled: false,
+              eventFunction:
                   (List<Event> events, List<String> userParticipatingEvents) {
                 List<Event> result = [];
                 final DateTime now = DateTime.now();
@@ -56,7 +56,8 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
               },
             ),
             GetEvents(
-              eventFuncion:
+              isCanceled: false,
+              eventFunction:
                   (List<Event> events, List<String> userParticipatingEvents) {
                 List<Event> result = [];
                 final DateTime now = DateTime.now();
@@ -69,7 +70,13 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
                 return result;
               },
             ),
-            const CanceledEvents(),
+            GetEvents(
+              isCanceled: true,
+              eventFunction:
+                  (List<Event> events, List<String> userParticipatingEvents) {
+                return [];
+              },
+            ),
           ],
         ),
         floatingActionButton: FloatingActionButton(

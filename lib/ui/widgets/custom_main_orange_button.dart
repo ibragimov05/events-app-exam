@@ -5,11 +5,13 @@ import 'package:flutter/widgets.dart';
 class CustomMainOrangeButton extends StatelessWidget {
   final String buttonText;
   final void Function() onTap;
+  final Color? color;
 
   const CustomMainOrangeButton({
     super.key,
     required this.buttonText,
     required this.onTap,
+    this.color,
   });
 
   @override
@@ -20,7 +22,7 @@ class CustomMainOrangeButton extends StatelessWidget {
         width: double.infinity,
         height: 60,
         decoration: BoxDecoration(
-          color: AppColors.mainOrange.withOpacity(0.1),
+          color: color == null ? AppColors.mainOrange.withOpacity(0.1) : color,
           border: Border.all(
             color: AppColors.mainOrange,
             width: 3,

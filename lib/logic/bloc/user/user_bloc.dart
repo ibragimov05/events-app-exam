@@ -17,6 +17,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<EditUserImageEvent>(_editUserImage);
     on<AddFavoriteEvent>(_addFavoriteEvent);
     on<AddNewParticipatingEvent>(_addParticipatingEvent);
+
   }
 
   final UserSharedPrefService _userSharedPrefService = UserSharedPrefService();
@@ -67,7 +68,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         id: event.id,
         firstName: event.newUserName,
       );
-
       emit(UserInfoLoadedState(
         id: user.id,
         name: user.firstName,
@@ -78,6 +78,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         registeredEvents: user.registeredEventsId,
         canceledEvents: user.canceledEvents,
       ));
+      add(FetchUserInfoEvent());
     } catch (e) {
       emit(ErrorUserState(error: e.toString()));
     }
@@ -106,6 +107,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         registeredEvents: user.registeredEventsId,
         canceledEvents: user.canceledEvents,
       ));
+      add(FetchUserInfoEvent());
     } catch (e) {
       emit(ErrorUserState(error: e.toString()));
     }
@@ -138,6 +140,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           canceledEvents: user.canceledEvents,
         ),
       );
+      add(FetchUserInfoEvent());
     } catch (e) {
       emit(ErrorUserState(error: e.toString()));
     }
