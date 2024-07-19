@@ -1,3 +1,4 @@
+import 'package:events_app_exam/logic/bloc/theme/theme_cubit.dart';
 import 'package:events_app_exam/logic/bloc/user/user_bloc.dart';
 import 'package:events_app_exam/ui/screens/profile_screen/widgets/custom_list_tile.dart';
 import 'package:events_app_exam/ui/widgets/image_with_loader.dart';
@@ -24,6 +25,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final UserBloc userBloc = context.read<UserBloc>();
+    final ThemeCubit themeCubit = context.read<ThemeCubit>();
     return Scaffold(
       appBar: AppBar(
         leading: const ArrowBackButton(),
@@ -89,7 +91,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     context: context,
                     builder: (context) => ShowEditDialog(
                       editType: 'name',
-                      deafaultValue: state.name,
+                      defaultValue: state.name,
                       editUserInfo: (p0) {
                         userBloc.add(
                           EditUserNameEvent(
@@ -108,7 +110,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     context: context,
                     builder: (context) => ShowEditDialog(
                       editType: 'surname',
-                      deafaultValue: state.surname,
+                      defaultValue: state.surname,
                       editUserInfo: (p0) {
                         userBloc.add(
                           EditUserSurnameEvent(
@@ -136,17 +138,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                 ),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Language'),
-                    Text('ENG'),
-                  ],
-                ),
                 SwitchListTile(
                   title: const Text('Dark mode'),
-                  value: false,
-                  onChanged: (value) {},
+                  value: themeCubit.state,
+                  onChanged: (value) => themeCubit.toggleTheme(),
                 ),
               ],
             );
@@ -154,7 +149,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           return const SizedBox.shrink();
         },
       ),
-
     );
   }
 }

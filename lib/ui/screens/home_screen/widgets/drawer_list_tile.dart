@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 class DrawerListTile extends StatelessWidget {
-  final IconData draweIcon;
+  final IconData drawerIcon;
   final String text;
   final Function() onTap;
   const DrawerListTile({
     super.key,
-    required this.draweIcon,
+    required this.drawerIcon,
     required this.text,
     required this.onTap,
   });
@@ -24,7 +24,7 @@ class DrawerListTile extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(draweIcon),
+                Icon(drawerIcon),
                 const Gap(5),
                 Text(
                   text,

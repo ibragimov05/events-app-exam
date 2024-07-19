@@ -1,6 +1,7 @@
 import 'package:events_app_exam/ui/screens/my_events_screen/my_events.dart';
 import 'package:events_app_exam/ui/screens/my_events_screen/get_events.dart';
 import 'package:events_app_exam/ui/widgets/arrow_back_button.dart';
+import 'package:events_app_exam/utils/app_constants.dart';
 import 'package:events_app_exam/utils/app_router.dart';
 import 'package:flutter/material.dart';
 
@@ -30,7 +31,7 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
               Tab(text: 'All'),
               Tab(text: 'Near'),
               Tab(text: 'Participated'),
-              Tab(text: 'Canceled'),
+              Tab(text: 'Favorite'),
             ],
           ),
         ),
@@ -74,7 +75,14 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
               isCanceled: true,
               eventFunction:
                   (List<Event> events, List<String> userParticipatingEvents) {
-                return [];
+                List<Event> result = [];
+                for (var each in events) {
+                  if (AppConstants.userFavList.contains(each.id)) {
+                    result.add(each);
+                  }
+                }
+
+                return result;
               },
             ),
           ],

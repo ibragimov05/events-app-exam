@@ -8,6 +8,7 @@ import 'package:flutter/widgets.dart';
 
 class SevenDayEvent extends StatelessWidget {
   final Event event;
+
   const SevenDayEvent({super.key, required this.event});
 
   @override

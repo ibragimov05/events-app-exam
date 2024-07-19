@@ -6,13 +6,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ShowEditDialog extends StatefulWidget {
   final void Function(String) editUserInfo;
   final String editType;
-  final String deafaultValue;
+  final String defaultValue;
 
   const ShowEditDialog({
     super.key,
     required this.editUserInfo,
     required this.editType,
-    required this.deafaultValue,
+    required this.defaultValue,
   });
 
   @override
@@ -33,7 +33,7 @@ class _ShowEditDialogState extends State<ShowEditDialog> {
   @override
   void initState() {
     super.initState();
-    _textEditingController.text = widget.deafaultValue;
+    _textEditingController.text = widget.defaultValue;
   }
 
   @override

@@ -56,6 +56,7 @@ dependencies:
   duration_picker: ^1.2.0
   carousel_slider: ^4.2.1
   rounded_loading_button_plus: ^3.0.1
+  stream_transform: ^2.1.0
   
 
 dev_dependencies:

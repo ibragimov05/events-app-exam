@@ -17,7 +17,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<EditUserImageEvent>(_editUserImage);
     on<AddFavoriteEvent>(_addFavoriteEvent);
     on<AddNewParticipatingEvent>(_addParticipatingEvent);
-
   }
 
   final UserSharedPrefService _userSharedPrefService = UserSharedPrefService();
@@ -215,7 +214,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           uid: await _userSharedPrefService.getUserUid(),
         );
         emit(
-          LoaededWithoutAddingState(
+          LoadedWithoutAddingState(
             id: user.id,
             name: user.firstName,
             surname: user.lastName,

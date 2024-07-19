@@ -1,6 +1,8 @@
-import 'package:events_app_exam/logic/bloc/user/user_bloc.dart';
+import 'dart:convert';
+
+import 'package:events_app_exam/utils/app_constants.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FavoriteButtonHomeScreen extends StatefulWidget {
   final String eventId;
@@ -13,33 +15,34 @@ class FavoriteButtonHomeScreen extends StatefulWidget {
 }
 
 class _FavoriteButtonHomeScreenState extends State<FavoriteButtonHomeScreen> {
+  late bool _isFav;
+
+  @override
+  void initState() {
+    super.initState();
+    _isFav = _checkIsFavorite(
+        userFavoriteList: AppConstants.userFavList, eventId: widget.eventId);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<UserBloc, UserState>(
-      bloc: context.read<UserBloc>()..add(FetchUserInfoEvent()),
-      buildWhen: (previous, current) =>
-          previous != current && current is UserInfoLoadedState,
-      builder: (BuildContext context, UserState state) {
-        if (state is UserInfoLoadedState) {
-          return IconButton(
-            onPressed: () {
-              context.read<UserBloc>().add(
-                    AddFavoriteEvent(id: state.id, eventId: widget.eventId),
-                  );
-            },
-            icon: Icon(
-              _checkIsFavorite(
-                userFavoriteList: state.favoriteEvents,
-                eventId: widget.eventId,
-              )
-                  ? Icons.favorite
-                  : Icons.favorite_border,
-            ),
-          );
+    return IconButton(
+      onPressed: () async {
+        _isFav = !_isFav;
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        if (!_isFav) {
+          AppConstants.userFavList
+              .removeWhere((element) => element == widget.eventId);
         } else {
-          return const Icon(Icons.favorite_border);
+          AppConstants.userFavList.add(widget.eventId);
         }
+        preferences.setString(
+          'favorite-events',
+          jsonEncode(AppConstants.userFavList),
+        );
+        setState(() {});
       },
+      icon: Icon(_isFav ? Icons.favorite : Icons.favorite_border),
     );
   }
 
@@ -47,8 +50,8 @@ class _FavoriteButtonHomeScreenState extends State<FavoriteButtonHomeScreen> {
     required List<String> userFavoriteList,
     required String eventId,
   }) {
-    for (var element in userFavoriteList) {
-      if (element == eventId) {
+    for (var each in userFavoriteList) {
+      if (eventId == each) {
         return true;
       }
     }

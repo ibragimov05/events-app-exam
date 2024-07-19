@@ -21,7 +21,7 @@ class CustomListTile extends StatelessWidget {
         Text(text, style: AppTextStyles.comicSans),
         Text(userInfo, style: AppTextStyles.comicSans),
         IconButton(
-          onPressed:onTap,
+          onPressed: onTap,
           icon: const Icon(Icons.edit),
         ),
       ],

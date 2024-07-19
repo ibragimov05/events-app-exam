@@ -54,7 +54,8 @@ class _GetEventsState extends State<GetEvents> {
                         itemBuilder: (context, index) {
                           return EventWidget(
                             event: userParticipatingEvents[index],
-                            isHomeScreen: false,
+                            isHomeScreen: true,
+                            isFavScreen: true,
                           );
                         },
                       )

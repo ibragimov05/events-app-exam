@@ -29,7 +29,7 @@ class UserInfoLoadedState extends UserState {
   });
 }
 
-class LoaededWithoutAddingState extends UserState {
+class LoadedWithoutAddingState extends UserState {
   final String id;
   final String name;
   final String surname;
@@ -39,7 +39,7 @@ class LoaededWithoutAddingState extends UserState {
   final List<String> registeredEvents;
   final List<String> canceledEvents;
 
-  LoaededWithoutAddingState({
+  LoadedWithoutAddingState({
     required this.id,
     required this.name,
     required this.surname,

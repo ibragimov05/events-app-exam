@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class PaymentSelectionWidget extends StatefulWidget {
   final void Function(String) paymentMethod;
+
   const PaymentSelectionWidget({super.key, required this.paymentMethod});
 
   @override

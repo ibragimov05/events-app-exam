@@ -11,8 +11,8 @@ class FirebaseEventService {
           .map((doc) => Event.fromQuerySnapshot(doc))
           .where(
             (event) =>
-                event.locationName.toLowerCase().contains(city.toLowerCase()),
-          )
+            event.locationName.toLowerCase().contains(city.toLowerCase()),
+      )
           .toList();
     });
   }
@@ -29,13 +29,13 @@ class FirebaseEventService {
         .where('start-time', isLessThanOrEqualTo: sevenDaysFromNowTS)
         .snapshots()
         .map(
-      (snapshot) {
+          (snapshot) {
         return snapshot.docs
             .map((doc) => Event.fromQuerySnapshot(doc))
             .where(
               (event) =>
-                  event.locationName.toLowerCase().contains(city.toLowerCase()),
-            )
+              event.locationName.toLowerCase().contains(city.toLowerCase()),
+        )
             .toList();
       },
     );
@@ -70,8 +70,8 @@ class FirebaseEventService {
       'creator-image-url': creatorImageUrl,
       'creator-name': creatorName,
       'name': name,
-      'end-time': startTime,
-      'start-time': endTime,
+      'end-time': endTime,
+      'start-time': startTime,
       'geo-point': geoPoint,
       'description': description,
       'image-url': imageUrl,
@@ -84,7 +84,38 @@ class FirebaseEventService {
     _firestoreEvents.doc(id).update({'attending-people': peopleCount});
   }
 
-  void editEvent() {}
+  void editEvent({
+    required String id,
+    String? name,
+    Timestamp? startTime,
+    Timestamp? endTime,
+    String? description,
+    String? imageUrl,
+    String? locationName,
+  }) {
+    Map<String, dynamic> updatedData = {};
+
+    if (name != null) updatedData['name'] = name;
+    if (startTime != null) updatedData['start-time'] = startTime;
+    if (endTime != null) updatedData['end-time'] = endTime;
+    if (description != null) updatedData['description'] = description;
+    if (imageUrl != null) updatedData['image-url'] = imageUrl;
+    if (locationName != null) updatedData['location-name'] = locationName;
+
+    _firestoreEvents.doc(id).update(updatedData);
+  }
 
   void deleteEvent(String id) => _firestoreEvents.doc(id).delete();
+
+  Stream<List<Event>> searchEvents(String query) {
+    return _firestoreEvents.snapshots().map((snapshot) {
+      return snapshot.docs
+          .map((doc) => Event.fromQuerySnapshot(doc))
+          .where((event) =>
+      event.name.toLowerCase().contains(query.toLowerCase()) ||
+          event.description.toLowerCase().contains(query.toLowerCase()) ||
+          event.locationName.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
+  }
 }

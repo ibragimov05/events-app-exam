@@ -24,7 +24,8 @@ class LocationService {
     if (permission != LocationPermission.deniedForever ||
         permission != LocationPermission.denied) {
       final location = await Geolocator.getCurrentPosition();
-      List<Placemark> placeMarks = await placemarkFromCoordinates(location.latitude, location.longitude);
+      List<Placemark> placeMarks =
+          await placemarkFromCoordinates(location.latitude, location.longitude);
       Placemark place = placeMarks[0];
       return "${place.locality}";
     }

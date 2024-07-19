@@ -1,11 +1,13 @@
 import 'package:bloc/bloc.dart';
-import 'package:events_app_exam/logic/bloc/theme/theme_state.dart';
-import 'package:flutter/material.dart';
+import 'package:events_app_exam/utils/app_constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class ThemeCubit extends Cubit<ThemeState> {
-  ThemeCubit() : super(LightModeState(themeData: ThemeData.dark()));
+class ThemeCubit extends Cubit<bool> {
+  ThemeCubit() : super(AppConstants.themeValue);
 
-  void onDarkTapped() {
-
+  void toggleTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool('theme', !state);
+    emit(!state);
   }
 }

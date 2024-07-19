@@ -9,6 +9,7 @@ import '../../logic/services/firebase/firebase_firestore_service.dart';
 class ManageMedia extends StatefulWidget {
   final bool isEditProfile;
   final String? userId;
+
   const ManageMedia({
     super.key,
     required this.isEditProfile,

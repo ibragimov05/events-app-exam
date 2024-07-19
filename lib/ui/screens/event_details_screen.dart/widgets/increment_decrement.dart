@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class IncrementDecrementWidget extends StatefulWidget {
   final void Function(int) getNumber;
+
   const IncrementDecrementWidget({super.key, required this.getNumber});
 
   @override

@@ -28,7 +28,6 @@ class _HomeScreenDrawerState extends State<HomeScreenDrawer> {
   Widget build(BuildContext context) {
     final AuthBloc authBloc = context.read<AuthBloc>();
     return Drawer(
-      backgroundColor: Colors.white,
       child: Column(
         children: [
           BlocBuilder<UserBloc, UserState>(
@@ -76,12 +75,12 @@ class _HomeScreenDrawerState extends State<HomeScreenDrawer> {
             child: Column(
               children: [
                 DrawerListTile(
-                  draweIcon: Icons.event,
+                  drawerIcon: Icons.event,
                   text: 'My events',
                   onTap: () => Navigator.pushNamed(context, AppRouter.myEvents),
                 ),
                 DrawerListTile(
-                  draweIcon: Icons.person_outlined,
+                  drawerIcon: Icons.person_outlined,
                   text: 'Profile',
                   onTap: () => Navigator.pushNamed(context, AppRouter.profile),
                 ),

@@ -6,6 +6,7 @@ import '../../../widgets/error_dialog.dart';
 
 class YandexMapWidget extends StatefulWidget {
   final void Function(Point) onLocationTap;
+
   const YandexMapWidget({super.key, required this.onLocationTap});
 
   @override
@@ -86,8 +87,8 @@ class _YandexMapWidgetState extends State<YandexMapWidget> {
                         ),
                       ),
                     );
-                   
-                   _mapObjects.add(_placemarkMapObject!);
+
+                    _mapObjects.add(_placemarkMapObject!);
                   });
                   widget.onLocationTap(argument);
                 },

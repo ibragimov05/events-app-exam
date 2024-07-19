@@ -11,11 +11,13 @@ import 'package:gap/gap.dart';
 class EventWidget extends StatefulWidget {
   final Event event;
   final bool isHomeScreen;
+  final bool? isFavScreen;
 
   const EventWidget({
     super.key,
     required this.isHomeScreen,
     required this.event,
+    this.isFavScreen,
   });
 
   @override
@@ -63,9 +65,9 @@ class _EventWidgetState extends State<EventWidget> {
                         widget.event.name,
                         style: AppTextStyles.comicSans.copyWith(fontSize: 12),
                       ),
-                      if (widget.isHomeScreen)
-                        FavoriteButtonHomeScreen(eventId: widget.event.id)
-                      else
+                      if (widget.isHomeScreen && widget.isFavScreen == null)
+                        FavoriteButtonHomeScreen(eventId: widget.event.id),
+                      if (!widget.isHomeScreen)
                         CustomPopUp(event: widget.event),
                     ],
                   ),

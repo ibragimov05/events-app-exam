@@ -5,6 +5,7 @@ import 'package:yandex_mapkit/yandex_mapkit.dart';
 
 class EventLocationMap extends StatelessWidget {
   final Point eventLocation;
+
   const EventLocationMap({super.key, required this.eventLocation});
 
   @override
@@ -36,7 +37,8 @@ class EventLocationMap extends StatelessWidget {
               icon: PlacemarkIcon.single(
                 PlacemarkIconStyle(
                   image: BitmapDescriptor.fromAssetImage(
-                      "assets/images/place.png"),
+                    "assets/images/place.png",
+                  ),
                 ),
               ),
             )

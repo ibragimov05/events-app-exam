@@ -22,7 +22,7 @@ class CustomMainOrangeButton extends StatelessWidget {
         width: double.infinity,
         height: 60,
         decoration: BoxDecoration(
-          color: color == null ? AppColors.mainOrange.withOpacity(0.1) : color,
+          color: color ?? AppColors.mainOrange.withOpacity(0.1),
           border: Border.all(
             color: AppColors.mainOrange,
             width: 3,
